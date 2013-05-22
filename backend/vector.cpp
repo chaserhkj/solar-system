@@ -1,4 +1,5 @@
 #include "vector.h"
+#include <cmath>
 
 vector vector::operator+ (const vector &v) const
 {
