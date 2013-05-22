@@ -22,7 +22,7 @@ vpath %.cpp backend
 vpath %.h backend
 vpath %.py frontend
 
-.PHONY: clean dist
+.PHONY: clean
 
 dist: $(BACKEND_DIST) $(FRONTEND_DIST)
 	$(MKDIR) dist
