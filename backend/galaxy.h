@@ -23,7 +23,7 @@ public:
 
     void ptop1(); //Copy postion to p1
     void newp1(double dt); //Calculate new p1
-    void flush(); //Flush p1 back to p and culculate new v
+    void flush(double dt); //Flush p1 back to p and culculate new v
 };
 
 class galaxy
@@ -49,7 +49,7 @@ public:
     int getCelaNum();
     double getEk();
     double getEp();
-    double calculateEnergy(); // Calculate system energy
+    void calculateEnergy(); // Calculate system energy
     cela* output();
 };
 

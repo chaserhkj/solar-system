@@ -72,7 +72,7 @@ public:
     int getCelaNum();
     double getEk();
     double getEp();
-    double calculateEnergy(); // Calculate system energy
+    void calculateEnergy(); // Calculate system energy
     cela* output();
 };
 

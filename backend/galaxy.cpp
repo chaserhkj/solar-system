@@ -11,7 +11,7 @@ void cela::newp1(double dt)
     p1 = p + v * dt + a * dt * dt / 2;
 }
 
-void cela::flush() 
+void cela::flush(double dt) 
 {
     v += a * dt;
     p = p1;
@@ -117,7 +117,7 @@ void galaxy::run(int recurdepth, bool applyfix)
     }
 
     for (i=0;i<n;i++) { //Flush back
-        celas[i].newp1();
-        celas[i].flush();
+        celas[i].newp1(dt);
+        celas[i].flush(dt);
     }
 }
