@@ -44,16 +44,6 @@ int galaxy::getCelaNum()
     return n;
 }
 
-double galaxy::getEk()
-{
-    return ek;
-}
-
-double galaxy::getEp()
-{
-    return ep;
-}
-
 cela* galaxy::output(){
     return celas;
 }
@@ -108,7 +98,7 @@ void galaxy::calculateEnergy()
     }
 }
 
-void galaxy::getEnergy()
+double galaxy::getEnergy()
 {
     if (applyenergyfix) {
         return e0;
