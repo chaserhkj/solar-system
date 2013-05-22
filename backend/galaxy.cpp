@@ -1,11 +1,6 @@
 #include <cmath>
 #include "galaxy.h"
 
-void cela::ptop1()
-{
-    p1 = p;
-}
-
 void cela::newp1(double dt)
 {
     p1 = p + v * dt + a * dt * dt / 2;
@@ -58,6 +53,43 @@ cela* galaxy::output(){
     return celas;
 }
 
+vector galaxy::getacc(int i)
+{
+    int j;
+    vector r; //vector distance
+    double d; //distance
+    vector acc(0,0,0);
+
+    for (j=0;j<n;j++) { // cela[j]'s gravity on cela[i]
+        if (j != i) { //Not myself
+            r = celas[j].p - celas[i].p;
+            d = r.mag();
+            acc += G * celas[j].m * r / (d * d * d);
+        }
+    }
+
+    return acc;
+}
+
+
+vector galaxy::getacc1(int i)
+{
+    int j;
+    vector r; //vector distance
+    double d; //distance
+    vector acc(0,0,0);
+
+    for (j=0;j<n;j++) { // cela[j]'s gravity on cela[i]
+        if (j != i) { //Not myself
+            r = celas[j].p1 - celas[i].p1;
+            d = r.mag();
+            acc += G * celas[j].m * r / (d * d * d);
+        }
+    }
+
+    return acc;
+}
+
 void galaxy::calculateEnergy() 
 {
     int i,j;
@@ -74,29 +106,11 @@ void galaxy::calculateEnergy()
 
 void galaxy::run(int recurdepth, bool applyfix)
 {
-    int i,j,rec;
-    vector acc; //acceleration
-    vector r; //vector distance
-    double d; //distance
+    int i,rec;
     double co; // fix coefficient
 
-    if (applyfix) {  // Fix system energy
-        co = sqrt((e0 - ep) / ek);
-        for (i=0;i<n;i++) {
-            celas[i].v *= co;
-        }
-    }
-
     for (i=0;i<n;i++) {
-        acc = vector(0,0,0);
-        for (j=0;j<n;j++) { // cela[j]'s gravity on cela[i]
-            if (j != i) { //Not myself
-                r = celas[j].p - celas[i].p;
-                d = r.mag();
-                acc += G * celas[j].m * r / (d * d * d);
-            }
-        }
-        celas[i].a = acc;
+        celas[i].a = getacc(i);
     }
 
     for (rec=0;rec<recurdepth;rec++) { //Recursive calculation
@@ -104,20 +118,19 @@ void galaxy::run(int recurdepth, bool applyfix)
             celas[i].newp1(dt);
         }
         for (i=0;i<n;i++) {
-            acc = vector(0,0,0);
-            for (j=0;j<n;j++) { // cela[j]'s gravity on cela[i]
-                if (j != i) { //Not myself
-                    r = celas[j].p1 - celas[i].p1;
-                    d = r.mag();
-                    acc += G * celas[j].m * r / (d * d * d);
-                }
-            }
-            celas[i].a = (celas[i].a + acc) / 2;
+            celas[i].a = (celas[i].a + getacc1(i)) / 2;
         }
     }
 
     for (i=0;i<n;i++) { //Flush back
         celas[i].newp1(dt);
         celas[i].flush(dt);
+    }
+
+    if (applyfix) {  // Fix system energy
+        co = sqrt((e0 - ep) / ek);
+        for (i=0;i<n;i++) {
+            celas[i].v *= co;
+        }
     }
 }

@@ -21,7 +21,6 @@ public:
         id(id),name(name),m(m),p(p),v(v) {}
     cela() {}
 
-    void ptop1(); //Copy postion to p1
     void newp1(double dt); //Calculate new p1
     void flush(double dt); //Flush p1 back to p and culculate new v
 };
@@ -36,6 +35,9 @@ private:
     double ek; // System Kinetic energy
     double ep; // System Potential energy
     double e0; // System initial total energy
+
+    vector getacc(int i); // Get accelration for celas[i] based on p
+    vector getacc1(int i); // Get accelration for celas[i] based on p1
 
 public:
     galaxy(int n, cela* stars, double step=1, double G=1);
