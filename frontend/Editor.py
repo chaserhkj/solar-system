@@ -1,10 +1,16 @@
 #!/usr/bin/env python2
 # import PyQt4.QtCore as c
 import PyQt4.QtGui as g
+import IO
 
 class Editor(g.QWidget):
+    def saveFile(self):
+        
     def __init__(self,parent=None):
         g.QWidget.__init__(self, parent)
+
+        self._io = IO.EdittimeIO()
+        
         self._layout = g.QVBoxLayout()
 
         self._a_layout = g.QHBoxLayout()
@@ -13,7 +19,9 @@ class Editor(g.QWidget):
         self._a_layout.addWidget(openB)
         self._a_layout.addWidget(saveB)
         self._layout.addLayout(self._a_layout)
-
+        openB.clicked.connect(self.saveFile)
+        
+        
         self._listWidget = g.QListWidget()
         self._layout.addWidget(self._listWidget)
 
@@ -73,4 +81,8 @@ class Editor(g.QWidget):
         self.setWindowTitle("Cela System Editor")
         self.setLayout(self._layout)
 
+# from PyQt4.QtGui import QApplication
+# app = QApplication([])
 
+e=Editor()
+e.show()        
