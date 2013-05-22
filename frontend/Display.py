@@ -2,45 +2,80 @@
 import PyQt4.QtOpenGL as qgl
 import PyQt4.QtCore as c
 import OpenGL.GL as gl
+import OpenGL.GLU as glu
 import OpenGL.GLUT as glut
 import galaxy
 
 class DisplayWidget(qgl.QGLWidget):
     def __init__(self,
                  galaxy_obj,
+                 gradius_list,
                  scale,
-                 timeout = 100,
+                 step_count = 10,
+                 interval = 100,
+                 plane_scale = None,
+                 cell_density = 10,
                  parent = None):
         qgl.QGLWidget.__init__(self, parent)
         self.setWindowTitle("Demo")
         self.setFixedSize(500,500)
 
         self._galaxy = galaxy_obj
-        self._scale = float(scale)
-        self._timeout = timeout
+        self._grs = gradius_list
+        self._scale_factor = float(1)/float(scale)
 
+        self._stepc = step_count
+        self._interval = interval
+
+        if plane_scale == None:
+            self._planes = scale
+        else:
+            self._planes = plane_scale
+        self._celld = cell_density
+
+        
         self._timer = c.QTimer(self)
         self._timer.timeout.connect(self.run)
         
     def run(self):
-        self._galaxy.run()
-        self.updateGL()
+        for i in xrange(self._stepc):
+            self._galaxy.run()
+            self.updateGL()
 
     def start(self):
-        self._timer.start(self._timeout)
+        self._timer.start(self._interval)
         
     def paintGL(self):
-        N = self._galaxy.getCelaNum()
-        array = galaxy.celaArray_frompointer(self._galaxy.output())
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
-        gl.glColor3f(0.6,0.8,1.0)
+        gl.glColor(0.6,0.8,1.0)
+
+        step = self._planes / float(self._celld)
+        for i in xrange(2 * self._celld):
+            gl.glBegin(gl.GL_LINES)
+            gl.glVertex(- self._planes + i*step,
+                        - self._planes)
+            gl.glVertex(- self._planes + i*step,
+                        self._planes - step)
+            gl.glEnd()
+        for i in xrange(2 * self._celld):
+            gl.glBegin(gl.GL_LINES)
+            gl.glVertex(- self._planes,
+                        - self._planes + i*step)
+            gl.glVertex(self._planes - step,
+                        - self._planes + i*step)
+            gl.glEnd()
+
+        N = self._galaxy.getCelaNum()
+        array = galaxy.\
+                celaArray_frompointer(self._galaxy.\
+                                      output())
         for i in xrange(N):
-            x = array[i].p.x / self._scale
-            y = array[i].p.y / self._scale
-            # z = array[i].p.z / self._scale
+            gr = self._grs[i]
             gl.glPushMatrix()
-            gl.glTranslatef(x, y, 0)
-            glut.glutSolidSphere(0.02, 30, 30)
+            gl.glTranslate(array[i].p.x,
+                           array[i].p.y,
+                           0)
+            glut.glutWireSphere(gr, 10, 10)
             gl.glPopMatrix()
             
     def initializeGL(self):
@@ -49,8 +84,14 @@ class DisplayWidget(qgl.QGLWidget):
         gl.glShadeModel(gl.GL_FLAT)
         
     def resizeGL(self, w, h):
+        print "resizeGL called"
         gl.glViewport(0, 0, w, h)
         gl.glMatrixMode(gl.GL_PROJECTION)
         gl.glLoadIdentity()
+        glu.gluPerspective(30, float(w)/float(h), 0, 100)
         gl.glMatrixMode(gl.GL_MODELVIEW)
         gl.glLoadIdentity()
+        glu.gluLookAt(2, 2, 2, -1, -1 ,-1, -1 , -1, 0)
+        gl.glScale(self._scale_factor,
+                   self._scale_factor,
+                   self._scale_factor)
