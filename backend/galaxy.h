@@ -2,30 +2,10 @@
 #define GALAXY_H
 
 #include <string>
+#include "vector.h"
 
 using std::string;
 
-class vector //3-D
-{
-public:
-    double x,y,z;
-
-    vector():x(0),y(0),z(0) {}
-    vector(double x, double y, double z):x(x),y(y),z(z) {}
-
-    vector operator+ (const vector &v) const; 
-    vector operator- (const vector &v) const;
-    vector operator* (double s) const; //Dot scala
-    double operator* (const vector &v) const; //Dot another vector
-    vector operator/ (double s) const;
-
-    double mag() const; //magnitude
-    
-
-    //friend vector operator* (double s, vector v);
-};
-
-vector operator* (double s, const vector &v);
 
 class cela //celestial body
 {
@@ -54,6 +34,9 @@ private:
     int n; //number of celas;
     double dt; //Time step
     double G; // Gravity constant
+    double ek; // System Kinetic energy
+    double ep; // System Potential energy
+    double e0; // System initial total energy
 
 public:
     galaxy(int n, cela* stars, double step=1, double G=1);
@@ -63,8 +46,11 @@ public:
 
     void setGravity(double gc);
     void setTimeStep(double step);
-    void run(int recurdepth);
+    void run(int recurdepth=0, bool applyfix=false); //User needs to calculateEnergy() before applyfix
     int getCelaNum();
+    double getEk();
+    double getEp();
+    double calculateEnergy(); // Calculate system energy
     cela* output();
 };
 

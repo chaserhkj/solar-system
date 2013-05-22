@@ -1,41 +1,6 @@
 #include <cmath>
 #include "galaxy.h"
 
-vector vector::operator+ (const vector &v) const
-{
-    return vector(x+v.x, y+v.y, z+v.z);
-}
-
-vector vector::operator- (const vector &v) const
-{
-    return vector(x-v.x,y-v.y,z-v.z);
-}
-
-vector vector::operator* (double s) const
-{
-    return vector(x*s, y*s, z*s);
-}
-
-double vector::operator* (const vector &v) const
-{
-    return x*v.x+y*v.y+z*v.z;
-}
-
-vector vector::operator/ (double s) const
-{
-    return vector(x/s, y/s, z/s);
-}
-
-double vector::mag() const
-{
-    return sqrt(x*x+y*y+z*z);
-}
-
-vector operator* (double s, const vector &v)
-{
-    return vector(v.x*s, v.y*s, v.z*s);
-}
-
 void cela::ptop1()
 {
     p1 = p;
@@ -48,7 +13,7 @@ void cela::newp1(double dt)
 
 void cela::flush() 
 {
-    v = v + a * dt;
+    v += a * dt;
     p = p1;
 }
 
@@ -59,6 +24,9 @@ galaxy::galaxy(int n, cela* stars, double step, double G):dt(step), G(G)
     for (i=0;i<n;i++) {
         celas[i] = stars[i];
     }
+
+    this->calculateEnergy();
+    e0 = ek + ep;
 }
 
 void galaxy::setGravity(double gc)
@@ -76,29 +44,62 @@ int galaxy::getCelaNum()
     return n;
 }
 
+double galaxy::getEk()
+{
+    return ek;
+}
+
+double galaxy::getEp()
+{
+    return ep;
+}
+
 cela* galaxy::output(){
     return celas;
 }
 
-void galaxy::run(int recurdepth) {
-    int i,j,r;
-    vector acc; //acceleration
-    vector d; //distance
+void galaxy::calculateEnergy() 
+{
+    int i,j;
+    ek = 0;
+    ep = 0;
     for (i=0;i<n;i++) {
-        celas[i].ptop1();
+        ek += celas[i].m * (celas[i].v * celas[i].v) / 2;
+        for (j=0;j<i;j++) {
+            ep -= G * celas[i].m * celas[j].m / (celas[j].p - celas[i].p).mag();
+        }
     }
+}
+
+
+void galaxy::run(int recurdepth, bool applyfix)
+{
+    int i,j,rec;
+    vector acc; //acceleration
+    vector r; //vector distance
+    double d; //distance
+    double co; // fix coefficient
+
+    if (applyfix) {  // Fix system energy
+        co = sqrt((e0 - ep) / ek);
+        for (i=0;i<n;i++) {
+            celas[i].v *= co;
+        }
+    }
+
     for (i=0;i<n;i++) {
         acc = vector(0,0,0);
         for (j=0;j<n;j++) { // cela[j]'s gravity on cela[i]
             if (j != i) { //Not myself
-                d = celas[j].p1 - celas[i].p1;
-                acc = acc + G * celas[j].m * d / (d.mag() * d.mag() *
-                        d.mag());
+                r = celas[j].p - celas[i].p;
+                d = r.mag();
+                acc += G * celas[j].m * r / (d * d * d);
             }
         }
         celas[i].a = acc;
     }
-    for (r=0;r<recurdepth;i++) {
+
+    for (rec=0;rec<recurdepth;rec++) { //Recursive calculation
         for (i=0;i<n;i++) {
             celas[i].newp1(dt);
         }
@@ -106,25 +107,17 @@ void galaxy::run(int recurdepth) {
             acc = vector(0,0,0);
             for (j=0;j<n;j++) { // cela[j]'s gravity on cela[i]
                 if (j != i) { //Not myself
-                    d = celas[j].p1 - celas[i].p1;
-                    acc = acc + G * celas[j].m * d / (d.mag() * d.mag() *
-                            d.mag());
+                    r = celas[j].p1 - celas[i].p1;
+                    d = r.mag();
+                    acc += G * celas[j].m * r / (d * d * d);
                 }
             }
             celas[i].a = (celas[i].a + acc) / 2;
         }
     }
-    for (i=0;i<n;i++) {
+
+    for (i=0;i<n;i++) { //Flush back
+        celas[i].newp1();
         celas[i].flush();
     }
 }
-                
-
-
-
-
-        
-
-
-
-    
