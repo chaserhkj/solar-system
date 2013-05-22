@@ -3,3 +3,4 @@
 _galaxy.so
 galaxy.py
 interface.cpp
+*.swp
