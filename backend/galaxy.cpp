@@ -1,6 +1,8 @@
 #include <cmath>
 #include "galaxy.h"
 
+#include <iostream>
+
 void cela::newp1(double dt)
 {
     p1 = p + v * dt + a * dt * dt / 2;
@@ -12,7 +14,7 @@ void cela::flush(double dt)
     p = p1;
 }
 
-galaxy::galaxy(int n, cela* stars, double step, double G, int recdpt, bool aplfx):dt(step), G(G), recurdepth(recdpt), applyenergyfix(aplfx)
+galaxy::galaxy(int n, cela* stars, double step, double G, int recdpt, bool aplfx):n(n), dt(step), G(G), recurdepth(recdpt), applyenergyfix(aplfx)
 {
     celas = new cela[n];
     int i;
