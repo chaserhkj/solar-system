@@ -1,35 +1,44 @@
-CXX = g++ -c
-CFLAGS = $(CFLAGS) -fpic -Wall -Wextra
-CXXFLAGS = $(CFLAGS)
-PYTHON_INCLUDE = -I/usr/include/python2.7
-LD = g++
-LFLAGS = $(LFLAGS) -fpic -shared
-SWIG = swig -python -c++
-SWIGFLAGS = -Wall
-RM = rm -rf
-CP = cp -r
-MKDIR = mkdir -p
+CXX := g++ -c
+CFLAGS := $(CFLAGS) -fpic -Wall -Wextra
+CXXFLAGS := $(CFLAGS)
+PYTHON_INCLUDE := -I/usr/include/python2.7
+LD := g++
+LFLAGS := $(LFLAGS) -fpic -shared
+SWIG := swig -python -c++
+SWIGFLAGS := -Wall
+RM := rm -rf
+CP := cp -r
+MKDIR := mkdir -p
 
-dist: backend/system.py backend/_system.so
+BACKEND_OBJS := vector.o galaxy.o
+INTERFACE_H := vector.h galaxy.h
+
+vpath %.cpp backend
+vpath %.h backend
+
+
+dist: backend/galaxy.py backend/_galaxy.so
 	$(MKDIR) dist
 	$(CP) frontend/*.py dist
-	$(CP) backend/_system.so backend/system.py dist
+	$(CP) backend/_galaxy.so backend/galaxy.py dist
 
-system.o: backend/system.cpp backend/system.h
-	$(CXX) $(CXXFLAGS) backend/system.cpp
+$(BACKEND_OBJS): %.o : %.cpp %.h
+	$(CXX) $(CXXFLAGS) $< -o $@
 
-backend/system.py: backend/system_wrap.cpp
+backend/galaxy.py: interface.cpp
 
-backend/system_wrap.cpp: backend/system.h backend/system.i
-	$(SWIG) $(SWIGFLAGS) -o backend/system_wrap.cpp backend/system.i 
+backend/_galaxy.so: interface.o $(BACKEND_OBJS)
+	$(LD) $(LFLAGS) $< -o backend/_galaxy.so
 
-system_wrap.o: backend/system_wrap.cpp
-	$(CXX) $(CXXFLAGS) $(PYTHON_INCLUDE) backend/system_wrap.cpp
+interface.cpp: backend/interface.i
+	$(SWIG) $(SWIGFLAGS) -o backend/interface.cpp backend/interface.i 
 
-backend/_system.so: system_wrap.o system.o
-	$(LD) $(LFLAGS) system_wrap.o system.o -o backend/_system.so
+interface.o: interface.cpp $(INTERFACE_H)
+	$(CXX) $(CXXFLAGS) $(PYTHON_INCLUDE) backend/interface.cpp -o $@
 
+
+.PHONY: clean
 clean:
 	$(RM) dist
-	$(RM) *.o backend/system_wrap.cpp
-	$(RM) backend/system.py backend/_system.so
+	$(RM) *.o backend/interface.cpp
+	$(RM) backend/galaxy.py backend/_galaxy.so
