@@ -1,8 +1,6 @@
 #include <cmath>
 #include "galaxy.h"
 
-#include <iostream>
-
 void cela::newp1(double dt)
 {
     p1 = p + v * dt + a * dt * dt / 2;
@@ -14,9 +12,12 @@ void cela::flush(double dt)
     p = p1;
 }
 
-galaxy::galaxy(int n, cela* stars, double step, double G, int recdpt, bool aplfx):n(n), dt(step), G(G), recurdepth(recdpt), applyenergyfix(aplfx)
+galaxy::galaxy(int n, cela* stars, double step, double G, double coscl, int
+        recdpt, bool aplfx):n(n), dt(step), G(G), coscl(coscl),
+    recurdepth(recdpt), applyenergyfix(aplfx)
 {
     celas = new cela[n];
+    sps = new vector[n];
     int i;
     for (i=0;i<n;i++) {
         celas[i] = stars[i];
@@ -29,6 +30,7 @@ galaxy::galaxy(int n, cela* stars, double step, double G, int recdpt, bool aplfx
 galaxy::~galaxy()
 {
     delete [] celas;
+    delete [] sps;
 }
 
 void galaxy::setGravity(double gc)
@@ -44,6 +46,16 @@ void galaxy::setTimeStep(double step)
 int galaxy::getCelaNum()
 {
     return n;
+}
+
+vector* galaxy::getScaledPositions()
+{
+    int i;
+    for (i=0;i<n;i++) {
+        sps[i] = celas[i].p / coscl;
+    }
+
+    return sps;
 }
 
 cela* galaxy::output(){

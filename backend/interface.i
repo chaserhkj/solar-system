@@ -40,28 +40,31 @@ public:
     int id; //Equals subscript
     string name; //Optional
     double m; //Mass
+    double r; //Radius
     vector p; //Position
     vector v; //Velocity
+    vector a; //Acceleration
 
-    cela(int id, vector p, vector v, double m, string name=""):
-        id(id),name(name),m(m),p(p),v(v) {}
+    cela(int id, vector p, vector v, double m, double r, string name=""):
+        id(id),name(name),m(m),r(r),p(p),v(v) {}
     cela() {}
-
 };
 
 class galaxy
 {
 public:
-    galaxy(int n, cela* stars, double step=1, double G=1, int recdpt=0, bool aplfx=false);
-    ~galaxy();
+    galaxy(int n, cela* stars, double step=1, double G=1, double coscl=1, int recdpt=0, bool aplfx=false);
+    ~galaxy(); 
 
     void setGravity(double gc);
     void setTimeStep(double step);
     void run();
     int getCelaNum();
     double getEnergy(); // Get system total energy
+    vector* getScaledPositions();
     cela* output();
 };
 
 %include "carrays.i"
+%array_class(vector, vectorArray);
 %array_class(cela, celaArray);
