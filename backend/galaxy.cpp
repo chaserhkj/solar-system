@@ -12,12 +12,10 @@ void cela::flush(double dt)
     p = p1;
 }
 
-galaxy::galaxy(int n, cela* stars, double step, double G, double coscl, int
-        recdpt, bool aplfx):n(n), dt(step), G(G), coscl(coscl),
-    recurdepth(recdpt), applyenergyfix(aplfx)
+galaxy::galaxy(int n, cela* stars, double step, double G, int
+        recdpt, bool aplfx):n(n), dt(step), G(G), recurdepth(recdpt), applyenergyfix(aplfx)
 {
     celas = new cela[n];
-    sps = new vector[n];
     int i;
     for (i=0;i<n;i++) {
         celas[i] = stars[i];
@@ -30,7 +28,6 @@ galaxy::galaxy(int n, cela* stars, double step, double G, double coscl, int
 galaxy::~galaxy()
 {
     delete [] celas;
-    delete [] sps;
 }
 
 void galaxy::setGravity(double gc)
@@ -48,16 +45,6 @@ int galaxy::getCelaNum()
     return n;
 }
 
-vector* galaxy::getScaledPositions()
-{
-    int i;
-    for (i=0;i<n;i++) {
-        sps[i] = celas[i].p / coscl;
-    }
-
-    return sps;
-}
-
 cela* galaxy::output(){
     return celas;
 }
@@ -73,7 +60,11 @@ vector galaxy::getacc(int i)
         if (j != i) { //Not myself
             r = celas[j].p - celas[i].p;
             d = r.mag();
-            acc += G * celas[j].m * r / (d * d * d);
+            if (d < (celas[i].r + celas[j].r)) {  //Collision
+                return 0;            
+            } else {
+                acc += G * celas[j].m * r / (d * d * d);
+            }
         }
     }
 

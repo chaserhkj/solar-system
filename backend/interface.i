@@ -53,7 +53,7 @@ public:
 class galaxy
 {
 public:
-    galaxy(int n, cela* stars, double step=1, double G=1, double coscl=1, int recdpt=0, bool aplfx=false);
+    galaxy(int n, cela* stars, double step=1, double G=1, int recdpt=0, bool aplfx=false);
     ~galaxy(); 
 
     void setGravity(double gc);
@@ -61,10 +61,8 @@ public:
     void run();
     int getCelaNum();
     double getEnergy(); // Get system total energy
-    vector* getScaledPositions();
     cela* output();
 };
 
 %include "carrays.i"
-%array_class(vector, vectorArray);
 %array_class(cela, celaArray);

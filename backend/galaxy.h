@@ -30,15 +30,12 @@ class galaxy
 {
 private:
     cela* celas; // array of celas
-    vector * sps; // Scaled positions
     int n; //number of celas;
     double dt; //Time step
     double G; // Gravity constant
     double ek; // System Kinetic energy
     double ep; // System Potential energy
     double e0; // System initial total energy
-
-    double coscl; // Coordination scale
 
     int recurdepth; // Recursion depth
     bool applyenergyfix;
@@ -49,7 +46,7 @@ private:
     void calculateEnergy(); // Calculate system energy
 
 public:
-    galaxy(int n, cela* stars, double step=1, double G=1, double coscl=1, int recdpt=0, bool aplfx=false);
+    galaxy(int n, cela* stars, double step=1, double G=1, int recdpt=0, bool aplfx=false);
     ~galaxy(); 
 
     void setGravity(double gc);
@@ -57,7 +54,6 @@ public:
     void run();
     int getCelaNum();
     double getEnergy(); // Get system total energy
-    vector* getScaledPositions();
     cela* output();
 };
 
