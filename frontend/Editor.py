@@ -5,6 +5,8 @@ import IO
 
 class Editor(g.QWidget):
     def saveFile(self):
+        # TODO: implement this
+        pass
         
     def __init__(self,parent=None):
         g.QWidget.__init__(self, parent)
@@ -80,9 +82,3 @@ class Editor(g.QWidget):
         
         self.setWindowTitle("Cela System Editor")
         self.setLayout(self._layout)
-
-# from PyQt4.QtGui import QApplication
-# app = QApplication([])
-
-e=Editor()
-e.show()        
