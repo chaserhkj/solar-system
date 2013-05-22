@@ -1,8 +1,10 @@
-#ifndef GALAXY_H
-#define GALAXY_H
+%module galaxy
+%{
+#include "galaxy.h"
+%}
 
-#include <string>
-#include "vector.h"
+%include "vector.i"
+%include "std_string.i"
 
 using std::string;
 
@@ -54,4 +56,6 @@ public:
 };
 
 
-#endif //GALAXY_H
+
+%include "carrays.i"
+%array_class(cela, celaArray);
