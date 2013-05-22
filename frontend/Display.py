@@ -2,7 +2,7 @@
 import PyQt4.QtOpenGL as qgl
 import PyQt4.QtCore as c
 import OpenGL.GL as gl
-# import OpenGL.GLUT as glut
+import OpenGL.GLUT as glut
 import galaxy
 
 class DisplayWidget(qgl.QGLWidget):
@@ -30,20 +30,21 @@ class DisplayWidget(qgl.QGLWidget):
         self._timer.start(self._timeout)
         
     def paintGL(self):
+        N = self._galaxy.getCelaNum()
+        array = galaxy.celaArray_frompointer(self._galaxy.output())
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
         gl.glColor3f(0.6,0.8,1.0)
-        N = self._galaxy.getCelaNum()
-        gl.glBegin(gl.GL_POINTS)
         for i in xrange(N):
-            array = galaxy.celaArray_frompointer(self._galaxy.output())
             x = array[i].p.x / self._scale
             y = array[i].p.y / self._scale
             # z = array[i].p.z / self._scale
-            gl.glVertex2f(x, y)
-        gl.glEnd()
-        
+            gl.glPushMatrix()
+            gl.glTranslatef(x, y, 0)
+            glut.glutSolidSphere(0.02, 30, 30)
+            gl.glPopMatrix()
+            
     def initializeGL(self):
-        # glut.glutInit([])
+        glut.glutInit([])
         gl.glClearColor(0,0,0,0)
         gl.glShadeModel(gl.GL_FLAT)
         
@@ -53,4 +54,3 @@ class DisplayWidget(qgl.QGLWidget):
         gl.glLoadIdentity()
         gl.glMatrixMode(gl.GL_MODELVIEW)
         gl.glLoadIdentity()
-        
