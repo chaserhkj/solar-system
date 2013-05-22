@@ -1,0 +1,5 @@
+*~
+*.o
+_galaxy.so
+galaxy.py
+interface.cpp
