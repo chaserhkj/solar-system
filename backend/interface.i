@@ -51,32 +51,17 @@ public:
 
 class galaxy
 {
-private:
-    cela* celas; // array of celas
-    int n; //number of celas;
-    double dt; //Time step
-    double G; // Gravity constant
-    double ek; // System Kinetic energy
-    double ep; // System Potential energy
-    double e0; // System initial total energy
-
 public:
-    galaxy(int n, cela* stars, double step=1, double G=1);
-    ~galaxy() {
-        delete [] celas;
-    }
+    galaxy(int n, cela* stars, double step=1, double G=1, int recdpt=0, bool aplfx=false);
+    ~galaxy();
 
     void setGravity(double gc);
     void setTimeStep(double step);
-    void run(int recurdepth=0, bool applyfix=false); //User needs to calculateEnergy() before applyfix
+    void run();
     int getCelaNum();
-    double getEk();
-    double getEp();
-    void calculateEnergy(); // Calculate system energy
+    double getEnergy(); // Get system total energy
     cela* output();
 };
-
-
 
 %include "carrays.i"
 %array_class(cela, celaArray);

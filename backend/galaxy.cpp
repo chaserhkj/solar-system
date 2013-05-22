@@ -12,7 +12,7 @@ void cela::flush(double dt)
     p = p1;
 }
 
-galaxy::galaxy(int n, cela* stars, double step, double G):dt(step), G(G)
+galaxy::galaxy(int n, cela* stars, double step, double G, int recdpt, bool aplfx):dt(step), G(G), recurdepth(recdpt), applyenergyfix(aplfx)
 {
     celas = new cela[n];
     int i;
@@ -22,6 +22,11 @@ galaxy::galaxy(int n, cela* stars, double step, double G):dt(step), G(G)
 
     this->calculateEnergy();
     e0 = ek + ep;
+}
+
+galaxy::~galaxy()
+{
+    delete [] celas;
 }
 
 void galaxy::setGravity(double gc)
@@ -103,8 +108,17 @@ void galaxy::calculateEnergy()
     }
 }
 
+void galaxy::getEnergy()
+{
+    if (applyenergyfix) {
+        return e0;
+    }
 
-void galaxy::run(int recurdepth, bool applyfix)
+    this->calculateEnergy();
+    return ek + ep;
+}
+
+void galaxy::run()
 {
     int i,rec;
     double co; // fix coefficient
@@ -127,7 +141,8 @@ void galaxy::run(int recurdepth, bool applyfix)
         celas[i].flush(dt);
     }
 
-    if (applyfix) {  // Fix system energy
+    if (applyenergyfix) {  // Fix system energy
+        this->calculateEnergy();
         co = sqrt((e0 - ep) / ek);
         for (i=0;i<n;i++) {
             celas[i].v *= co;
