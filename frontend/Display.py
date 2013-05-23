@@ -30,11 +30,12 @@ class ValueDisplayWidget(g.QWidget):
 class DisplayWidget(qgl.QGLWidget):
     def __init__(self,
                  galaxy_obj,
-                 gradius_list,
+                 graphic_obj,
                  scale,
                  step_count = 10,
                  interval = 20,
                  plane_scale = None,
+                 plane_color = [0.6,0.8,1.0],
                  cell_density = 10,
                  parent = None):
         qgl.QGLWidget.__init__(self, parent)
@@ -42,7 +43,7 @@ class DisplayWidget(qgl.QGLWidget):
         self.resize(500,500)
         
         self._galaxy = galaxy_obj
-        self._grs = gradius_list
+        self._graphic = graphic_obj
         self._scale_factor = float(1)/float(scale)
 
         self._stepc = step_count
@@ -53,7 +54,8 @@ class DisplayWidget(qgl.QGLWidget):
         else:
             self._planes = plane_scale
             self._celld = cell_density
-
+        self._planec = plane_color
+        
         self._vDisplay = ValueDisplayWidget(self._galaxy, self)
             
         self._timer = c.QTimer(self)
@@ -242,7 +244,6 @@ class DisplayWidget(qgl.QGLWidget):
     
     def paintGL(self):
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
-        gl.glColor(0.6,0.8,1.0)
 
         array = galaxy.\
                 celaArray_frompointer(self._galaxy.\
@@ -253,6 +254,7 @@ class DisplayWidget(qgl.QGLWidget):
             self._dz = array[self._trace].p.z * self._scale_factor
             self.setCamera()
         
+        gl.glColor(*self._planec)
         step = self._planes / float(self._celld)
         for i in xrange(2 * self._celld):
             gl.glBegin(gl.GL_LINES)
@@ -270,12 +272,23 @@ class DisplayWidget(qgl.QGLWidget):
             gl.glEnd()
 
         for i in xrange(self._n):
-            gr = self._grs[i]
+            graphic = self._graphic[i]
+
+            if "color" in graphic:
+                gl.glColor(*graphic["color"])
+            else:
+                gl.glColor(*self._planec)
+
+            if "type" in graphic and graphic["type"] == "solid":
+                drawfunc = glut.glutSolidSphere
+            else:
+                drawfunc = glut.glutWireSphere
+                
             gl.glPushMatrix()
             gl.glTranslate(array[i].p.x,
                            array[i].p.y,
                            array[i].p.z)
-            glut.glutWireSphere(gr, 8, 8)
+            drawfunc(graphic["radius"], 8, 8)
             gl.glPopMatrix()
 
     def setTraceCela(self,celaN):

@@ -10,7 +10,7 @@ if not _no_runtime:
     class RuntimeIO(object):
         def __init__(self):
             self.celas = None
-            self.gradius_list = None
+            self.graphic = None
             self.N = 0
 
         def load(self, filename):
@@ -31,7 +31,7 @@ if not _no_runtime:
                                             data[i]["mass"],
                                             data[i]["radius"],
                                             data[i]["name"])
-                self.gradius_list.append(data[i]["graphic_radius"])
+                self.graphic.append(data[i]["graphic"])
 
         def save(self, filename):
             data_list = []
@@ -45,7 +45,7 @@ if not _no_runtime:
                         "radius": self.celas[i].r,
                         "mass": self.celas[i].m,
                         "name": self.celas[i].name,
-                        "graphic_radius": self.gradius_list[i]
+                        "graphic": self.graphic[i]
                 }
                 data_list.append(data)
 
