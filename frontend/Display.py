@@ -68,13 +68,38 @@ class DisplayWidget(qgl.QGLWidget):
         self._exit_sc1.activated.connect(self.close)
         self._exit_sc2 = g.QShortcut("Esc",self)
         self._exit_sc2.activated.connect(self._esc_handler)
+
+        self._zoomin_sc = g.QShortcut("Ctrl+=",self)
+        self._zoomin_sc.activated.connect(self._zoomin_handler)
+        self._zoomout_sc = g.QShortcut("Ctrl+-",self)
+        self._zoomout_sc.activated.connect(self._zoomout_handler)
+        self._zoomreset_sc = g.QShortcut("Ctrl+0",self)
+        self._zoomreset_sc.activated.connect(self._zoomreset_handler)
+        
+        self._view_angle = 30
+        self._camera_p = [2, 2, 2, 0, 0 ,0, -1 , -1, 0]
         
     def _esc_handler(self):
         if self._fs:
             self.toggleFullScreen()
         else:
             self.close()
+
+    def _zoomin_handler(self):
+        self._view_angle = self._view_angle - 2
+        self.makeCurrent()
+        self.setCamera()
         
+    def _zoomout_handler(self):
+        self._view_angle = self._view_angle + 2
+        self.makeCurrent()
+        self.setCamera()
+
+    def _zoomreset_handler(self):
+        self._view_angle = 30
+        self.makeCurrent()
+        self.setCamera()
+
     def run(self):
         for i in xrange(self._stepc):
             self._galaxy.run()
@@ -120,7 +145,7 @@ class DisplayWidget(qgl.QGLWidget):
             gl.glTranslate(array[i].p.x,
                            array[i].p.y,
                            array[i].p.z)
-            glut.glutWireSphere(gr, 10, 10)
+            glut.glutWireSphere(gr, 8, 8)
             gl.glPopMatrix()
             
     def initializeGL(self):
@@ -128,14 +153,21 @@ class DisplayWidget(qgl.QGLWidget):
         gl.glClearColor(0,0,0,0)
         gl.glShadeModel(gl.GL_FLAT)
 
-    def resizeGL(self, w, h):
-        gl.glViewport(0, 0, w, h)
+    def setCamera(self):
         gl.glMatrixMode(gl.GL_PROJECTION)
         gl.glLoadIdentity()
-        glu.gluPerspective(30, float(w)/float(h), 0, 100)
+        glu.gluPerspective(self._view_angle, self._aspect, 0, 100)
         gl.glMatrixMode(gl.GL_MODELVIEW)
         gl.glLoadIdentity()
-        glu.gluLookAt(2, 2, 2, -1, -1 ,-1, -1 , -1, 0)
+        glu.gluLookAt(*self._camera_p)
         gl.glScale(self._scale_factor,
                    self._scale_factor,
                    self._scale_factor)
+
+        
+    def resizeGL(self, w, h):
+        gl.glViewport(0, 0, w, h)
+        self._aspect = float(w)/float(h)
+        self.setCamera()
+
+        
