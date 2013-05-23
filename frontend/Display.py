@@ -12,10 +12,8 @@ class ValueDisplayWidget(g.QWidget):
         g.QWidget.__init__(self,parent)
 
         self._galaxy = galaxy_obj
-        tL = g.QLabel("Time:", self)
-        self._t = g.QLabel("",self)
-        eL = g.QLabel("Energy:",self)
-        self._e = g.QLabel("",self)
+        tL = g.QLabel("", self)
+        eL = g.QLabel("",self)
 
         self._layout = g.QVBoxLayout()
         self._layout.addWidget(tL) 
@@ -27,8 +25,8 @@ class ValueDisplayWidget(g.QWidget):
         self.updateValue()
         
     def updateValue(self):
-        self._t.setText(str(self._galaxy.getTime()))
-        self._e.setText(str(self._galaxy.getEnergy()))
+        self._t.setText("Time: %s"%str(self._galaxy.getTime()))
+        self._e.setText("Energy: %s"%str(self._galaxy.getEnergy()))
         
 class DisplayWidget(qgl.QGLWidget):
     def __init__(self,
