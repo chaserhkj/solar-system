@@ -13,14 +13,13 @@ class DisplayWidget(qgl.QGLWidget):
                  scale,
                  step_count = 10,
                  interval = 100,
-                 window_scale = 500,
                  plane_scale = None,
                  cell_density = 10,
+                 fullscreen = False,
                  parent = None):
         qgl.QGLWidget.__init__(self, parent)
         self.setWindowTitle("Demo")
-        self.setFixedSize(window_scale,
-                          window_scale)
+        self.resize(500,500)
 
         self._galaxy = galaxy_obj
         self._grs = gradius_list
@@ -33,17 +32,29 @@ class DisplayWidget(qgl.QGLWidget):
             self._planes = scale
         else:
             self._planes = plane_scale
-        self._celld = cell_density
+            self._celld = cell_density
 
         
         self._timer = c.QTimer(self)
         self._timer.timeout.connect(self.run)
+
+        if fullscreen:
+            self.showFullScreen()
+            self._fs = True
+        else:
+            self._fs = False
         
     def run(self):
         for i in xrange(self._stepc):
             self._galaxy.run()
-        self.updateGL()
+            self.updateGL()
 
+    def toggleFullScreen(self):
+        if self._fs:
+            self.showNormal()
+        else:
+            self.showFullScreen()
+    
     def start(self):
         self._timer.start(self._interval)
         
