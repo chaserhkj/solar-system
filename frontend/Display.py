@@ -40,7 +40,7 @@ class DisplayWidget(qgl.QGLWidget):
     def run(self):
         for i in xrange(self._stepc):
             self._galaxy.run()
-            self.updateGL()
+        self.updateGL()
 
     def start(self):
         self._timer.start(self._interval)
