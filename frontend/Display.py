@@ -13,12 +13,14 @@ class DisplayWidget(qgl.QGLWidget):
                  scale,
                  step_count = 10,
                  interval = 100,
+                 window_scale = 500,
                  plane_scale = None,
                  cell_density = 10,
                  parent = None):
         qgl.QGLWidget.__init__(self, parent)
         self.setWindowTitle("Demo")
-        self.setFixedSize(500,500)
+        self.setFixedSize(window_scale,
+                          window_scale)
 
         self._galaxy = galaxy_obj
         self._grs = gradius_list
