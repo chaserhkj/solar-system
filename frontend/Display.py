@@ -61,6 +61,7 @@ class DisplayWidget(qgl.QGLWidget):
         self._timer.timeout.connect(self._vDisplay.updateValue)
         
         self._fs = False
+        self._n = self._galaxy.getCelaNum()
 
         self._fs_sc = g.QShortcut("f",self)
         self._fs_sc.activated.connect(self.toggleFullScreen)
@@ -70,7 +71,6 @@ class DisplayWidget(qgl.QGLWidget):
 
         self._zoomin_sc = g.QShortcut("=",self, self._zoomin)
         self._zoomout_sc = g.QShortcut("-",self, self._zoomout)
-        self._zoomreset_sc = g.QShortcut("0",self, self._zoomreset)
 
         self._upa_sc = g.QShortcut("Up", self, self._moveupa)
         self._downa_sc = g.QShortcut("Down", self, self._movedowna)
@@ -78,22 +78,85 @@ class DisplayWidget(qgl.QGLWidget):
         self._righta_sc = g.QShortcut("Right", self, self._moverighta)
         self._rin_sc = g.QShortcut("Ctrl+=",self, self._rin)
         self._rout_sc = g.QShortcut("Ctrl+-",self, self._rout)
-        self._rreset_sc = g.QShortcut("Ctrl+0",self, self._rreset)
         
         self._up_sc = g.QShortcut("w", self, self._moveup)
         self._down_sc = g.QShortcut("s", self, self._movedown)
         self._left_sc = g.QShortcut("a", self, self._moveleft)
         self._right_sc = g.QShortcut("d", self, self._moveright)
         
+        self._inx_sc = g.QShortcut("y", self, self._inx)
+        self._dex_sc = g.QShortcut("u", self, self._dex)
+        self._iny_sc = g.QShortcut("h", self, self._iny)
+        self._dey_sc = g.QShortcut("j", self, self._dey)
+        self._inz_sc = g.QShortcut("n", self, self._inz)
+        self._dez_sc = g.QShortcut("m", self, self._dez)
+
+        self._trace_f_sc = g.QShortcut("t", self, self._trace_f)
+        self._trace_b_sc = g.QShortcut("g", self, self._trace_b)
+
+        self._reset_sc = g.QShortcut("/", self, self._reset_view)
+        
+        self._trace = -1
+
+        self._reset()
+
+    def _reset(self):
         
         self._view_angle = 30
         
         self._x = 0
         self._y = 0
+        self._dx = 0
+        self._dy = 0
+        self._dz = 0
         self._rho = 3
         self._theta = 45
         self._phi = 45
 
+    def _reset_view(self):
+        self._reset()
+        self.makeCurrent()
+        self.setCamera()
+        
+    def _trace_f(self):
+        self._trace = self._trace + 1
+        if self._trace == self._n:
+            self._trace = -1
+
+    def _trace_b(self):
+        self._trace = self._trace - 1
+        if self._trace == -2:
+            self._trace = self._n - 1
+            
+    def _inx(self):
+        self._dx = self._dx + 0.05
+        self.makeCurrent()
+        self.setCamera()
+        
+    def _dex(self):
+        self._dx = self._dx - 0.05
+        self.makeCurrent()
+        self.setCamera()
+        
+    def _iny(self):
+        self._dy = self._dy + 0.05
+        self.makeCurrent()
+        self.setCamera()
+        
+    def _dey(self):
+        self._dy = self._dy - 0.05
+        self.makeCurrent()
+        self.setCamera()
+        
+    def _inz(self):
+        self._dz = self._dz + 0.05
+        self.makeCurrent()
+        self.setCamera()
+        
+    def _dez(self):
+        self._dz = self._dz - 0.05
+        self.makeCurrent()
+        self.setCamera()
         
     def _esc_handler(self):
         if self._fs:
@@ -120,7 +183,9 @@ class DisplayWidget(qgl.QGLWidget):
         self._x = self._x - 0.05
         self.makeCurrent()
         self.setCamera()
-
+    
+        
+        
     def _rin(self):
         self._rho = self._rho - 0.5
         self.makeCurrent()
@@ -129,11 +194,6 @@ class DisplayWidget(qgl.QGLWidget):
         
     def _rout(self):
         self._rho = self._rho + 0.5
-        self.makeCurrent()
-        self.setCamera()
-    
-    def _rreset(self):
-        self._rho = 3
         self.makeCurrent()
         self.setCamera()
 
@@ -167,15 +227,10 @@ class DisplayWidget(qgl.QGLWidget):
         self.makeCurrent()
         self.setCamera()
 
-    def _zoomreset(self):
-        self._view_angle = 45
-        self.makeCurrent()
-        self.setCamera()
-
     def run(self):
         for i in xrange(self._stepc):
             self._galaxy.run()
-            self.updateGL()
+        self.updateGL()
 
     def toggleFullScreen(self):
         if self._fs:
@@ -191,6 +246,15 @@ class DisplayWidget(qgl.QGLWidget):
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
         gl.glColor(0.6,0.8,1.0)
 
+        array = galaxy.\
+                celaArray_frompointer(self._galaxy.\
+                                      output())
+        if self._trace >= 0:
+            self._dx = array[self._trace].p.x * self._scale_factor
+            self._dy = array[self._trace].p.y * self._scale_factor
+            self._dz = array[self._trace].p.z * self._scale_factor
+            self.setCamera()
+        
         step = self._planes / float(self._celld)
         for i in xrange(2 * self._celld):
             gl.glBegin(gl.GL_LINES)
@@ -207,11 +271,7 @@ class DisplayWidget(qgl.QGLWidget):
                         - self._planes + i*step)
             gl.glEnd()
 
-        N = self._galaxy.getCelaNum()
-        array = galaxy.\
-                celaArray_frompointer(self._galaxy.\
-                                      output())
-        for i in xrange(N):
+        for i in xrange(self._n):
             gr = self._grs[i]
             gl.glPushMatrix()
             gl.glTranslate(array[i].p.x,
@@ -219,7 +279,13 @@ class DisplayWidget(qgl.QGLWidget):
                            array[i].p.z)
             glut.glutWireSphere(gr, 8, 8)
             gl.glPopMatrix()
-            
+
+    def setTraceCela(self,celaN):
+        if celaN < -1 or celaN >= self._n :
+            raise ValueError
+
+        self._trace = celaN
+
     def initializeGL(self):
         glut.glutInit([])
         gl.glClearColor(0,0,0,0)
@@ -232,10 +298,10 @@ class DisplayWidget(qgl.QGLWidget):
         gl.glMatrixMode(gl.GL_MODELVIEW)
         gl.glLoadIdentity()
         gl.glTranslate(self._x, self._y, 0)
-        glu.gluLookAt(self._rho * cmath.sin(self._theta /180.0 * cmath.pi).real * cmath.cos(self._phi /180.0 * cmath.pi).real,
-                      self._rho * cmath.sin(self._theta /180.0 * cmath.pi).real * cmath.sin(self._phi /180.0 * cmath.pi).real,
-                      self._rho * cmath.cos(self._theta /180.0 * cmath.pi).real,
-                      0, 0, 0,
+        glu.gluLookAt(self._rho * cmath.sin(self._theta /180.0 * cmath.pi).real * cmath.cos(self._phi /180.0 * cmath.pi).real + self._dx,
+                      self._rho * cmath.sin(self._theta /180.0 * cmath.pi).real * cmath.sin(self._phi /180.0 * cmath.pi).real + self._dy,
+                      self._rho * cmath.cos(self._theta /180.0 * cmath.pi).real + self._dz,
+                      self._dx, self._dy, self._dz,
                       0, 0, 1)
         gl.glScale(self._scale_factor,
                    self._scale_factor,
