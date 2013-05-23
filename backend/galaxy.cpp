@@ -14,7 +14,7 @@ void cela::flush(double dt)
 }
 
 galaxy::galaxy(int n, cela* stars, double step, double G, double t, int
-        recdpt, bool aplfx):n(n), dt(step), G(G), t(t), recurdepth(recdpt), applyenergyfix(aplfx)
+        r, double o, bool aplfx):n(n), dt(step), G(G), t(t), recurdepth(r), omega(o), applyenergyfix(aplfx)
 {
     celas = new cela[n];
     int i;
@@ -164,7 +164,7 @@ void galaxy::run()
             celas[i].newp1(dt);
         }
         for (i=0;i<n;i++) {
-            celas[i].a = celas[i].a * 3 / 4 + getacc1(i) / 4;
+            celas[i].a = celas[i].a * (1 - omega) + getacc1(i) * omega;
         }
     }
 

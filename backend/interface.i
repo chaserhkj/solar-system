@@ -38,7 +38,7 @@ public:
 class galaxy
 {
 public:
-    galaxy(int n, cela* stars, double step=1, double G=1, double t=0, int recdpt=0, bool aplfx=false);
+    galaxy(int n, cela* stars, double step=1, double G=1, double t=0, int r=0, double o=0.5, bool aplfx=false);
     ~galaxy(); 
 
     void setGravity(double gc);
