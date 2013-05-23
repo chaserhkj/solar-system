@@ -7,6 +7,29 @@ import OpenGL.GLU as glu
 import OpenGL.GLUT as glut
 import galaxy
 
+class ValueDisplayWidget(g.QWidget):
+    def __init__(self, galaxy_obj, parent=None):
+        g.QWidget.__init__(self,parent)
+
+        self._galaxy = galaxy_obj
+        tL = g.QLabel("Time:", self)
+        self._t = g.QLabel("",self)
+        eL = g.QLabel("Energy:",self)
+        self._e = g.QLabel("",self)
+
+        self._layout = g.QVBoxLayout()
+        self._layout.addWidget(tL) 
+        self._layout.addWidget(self._t)
+        self._layout.addWidget(eL)
+        self._layout.addWidget(self._e)
+        self.setLayout(self._layout)
+        
+        self.updateValue()
+        
+    def updateValue(self):
+        self._t.setText(str(self._galaxy.getTime()))
+        self._e.setText(str(self._galaxy.getEnergy()))
+        
 class DisplayWidget(qgl.QGLWidget):
     def __init__(self,
                  galaxy_obj,
@@ -20,7 +43,7 @@ class DisplayWidget(qgl.QGLWidget):
         qgl.QGLWidget.__init__(self, parent)
         self.setWindowTitle("Demo")
         self.resize(500,500)
-
+        
         self._galaxy = galaxy_obj
         self._grs = gradius_list
         self._scale_factor = float(1)/float(scale)
@@ -34,10 +57,12 @@ class DisplayWidget(qgl.QGLWidget):
             self._planes = plane_scale
             self._celld = cell_density
 
-        
+        self._vDisplay = ValueDisplayWidget(self._galaxy, self)
+            
         self._timer = c.QTimer(self)
         self._timer.timeout.connect(self.run)
-
+        self._timer.timeout.connect(self._vDisplay.updateValue)
+        
         self._fs = False
 
         self._fs_sc = g.QShortcut("f",self)
