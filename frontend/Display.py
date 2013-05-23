@@ -46,8 +46,13 @@ class DisplayWidget(qgl.QGLWidget):
         self._exit_sc1 = g.QShortcut("q",self)
         self._exit_sc1.activated.connect(self.close)
         self._exit_sc2 = g.QShortcut("Esc",self)
-        self._exit_sc2.activated.connect(self.close)
+        self._exit_sc2.activated.connect(self._esc_handler)
         
+    def _esc_handler(self):
+        if self._fs:
+            self.toggleFullScreen()
+        else:
+            self.close()
         
     def run(self):
         for i in xrange(self._stepc):
