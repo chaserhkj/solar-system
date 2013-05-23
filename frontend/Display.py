@@ -84,7 +84,6 @@ class DisplayWidget(qgl.QGLWidget):
         gl.glShadeModel(gl.GL_FLAT)
         
     def resizeGL(self, w, h):
-        print "resizeGL called"
         gl.glViewport(0, 0, w, h)
         gl.glMatrixMode(gl.GL_PROJECTION)
         gl.glLoadIdentity()
