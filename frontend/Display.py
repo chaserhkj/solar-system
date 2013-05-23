@@ -251,7 +251,7 @@ class DisplayWidget(qgl.QGLWidget):
         if vx > 0:
             return 180 + cmath.atan(vy / vx).real / cmath.pi * 180
         else:
-            return 360 + cmath.atan(vy / vx).real / cmath.pi * 180
+            return cmath.atan(vy / vx).real / cmath.pi * 180
             
     def paintGL(self):
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
