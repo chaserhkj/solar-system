@@ -33,7 +33,6 @@ public:
 
     cela(int id, vector p, vector v, double m, double r, string name=""):
         id(id),name(name),m(m),r(r),p(p),v(v) {}
-    cela() {}
 };
 
 class galaxy
