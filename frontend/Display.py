@@ -96,6 +96,8 @@ class DisplayWidget(qgl.QGLWidget):
 
         self._reset_sc = g.QShortcut("/", self, self._reset_view)
         
+        self._pause_sc = g.QShortcut("Space", self, self.togglePaused)
+        
         self._trace = -1
 
         self._reset()
@@ -115,48 +117,44 @@ class DisplayWidget(qgl.QGLWidget):
 
     def _reset_view(self):
         self._reset()
-        self.makeCurrent()
-        self.setCamera()
+        self._updateCamera()
         
     def _trace_f(self):
         self._trace = self._trace + 1
         if self._trace == self._n:
             self._trace = -1
+        self.updateGL()
 
     def _trace_b(self):
         self._trace = self._trace - 1
         if self._trace == -2:
             self._trace = self._n - 1
+        self.updateGL()
             
     def _inx(self):
         self._dx = self._dx + 0.05
-        self.makeCurrent()
-        self.setCamera()
+        self._updateCamera()
         
     def _dex(self):
         self._dx = self._dx - 0.05
-        self.makeCurrent()
-        self.setCamera()
+        self._updateCamera()
         
     def _iny(self):
         self._dy = self._dy + 0.05
-        self.makeCurrent()
-        self.setCamera()
+        self._updateCamera()
         
     def _dey(self):
         self._dy = self._dy - 0.05
-        self.makeCurrent()
-        self.setCamera()
+        self._updateCamera()
+
         
     def _inz(self):
         self._dz = self._dz + 0.05
-        self.makeCurrent()
-        self.setCamera()
+        self._updateCamera()
         
     def _dez(self):
         self._dz = self._dz - 0.05
-        self.makeCurrent()
-        self.setCamera()
+        self._updateCamera()
         
     def _esc_handler(self):
         if self._fs:
@@ -166,70 +164,61 @@ class DisplayWidget(qgl.QGLWidget):
             
     def _moveup(self):
         self._y = self._y - 0.05  
-        self.makeCurrent()
-        self.setCamera()
+        self._updateCamera()
 
     def _movedown(self):
         self._y = self._y + 0.05
-        self.makeCurrent()
-        self.setCamera()
+        self._updateCamera()
 
     def _moveleft(self):
         self._x = self._x + 0.05
-        self.makeCurrent()
-        self.setCamera()
+        self._updateCamera()
 
     def _moveright(self):
         self._x = self._x - 0.05
-        self.makeCurrent()
-        self.setCamera()
-    
-        
+        self._updateCamera()
         
     def _rin(self):
         self._rho = self._rho - 0.5
-        self.makeCurrent()
-        self.setCamera()
-        
+        self._updateCamera()
+
         
     def _rout(self):
         self._rho = self._rho + 0.5
-        self.makeCurrent()
-        self.setCamera()
+        self._updateCamera()
 
     def _moveupa(self):
         self._theta = self._theta - 1
-        self.makeCurrent()
-        self.setCamera()
+        self._updateCamera()
 
     def _movedowna(self):
         self._theta = self._theta + 1
-        self.makeCurrent()
-        self.setCamera()
+        self._updateCamera()
         
     def _movelefta(self):
         self._phi = self._phi - 1
-        self.makeCurrent()
-        self.setCamera()
+        self._updateCamera()
 
     def _moverighta(self):
         self._phi = self._phi + 1
-        self.makeCurrent()
-        self.setCamera()
+        self._updateCamera()
             
     def _zoomin(self):
         self._view_angle = self._view_angle - 2
-        self.makeCurrent()
-        self.setCamera()
+        self._updateCamera()
         
     def _zoomout(self):
         self._view_angle = self._view_angle + 2
-        self.makeCurrent()
-        self.setCamera()
-
+        self._updateCamera()
+        
     def run(self):
         for i in xrange(self._stepc):
             self._galaxy.run()
+        self.updateGL()
+
+    def _updateCamera(self):
+        self.makeCurrent()
+        self.setCamera()
         self.updateGL()
 
     def toggleFullScreen(self):
@@ -241,7 +230,16 @@ class DisplayWidget(qgl.QGLWidget):
             
     def start(self):
         self._timer.start(self._interval)
-        
+
+    def stop(self):
+        self._timer.stop()
+
+    def togglePaused(self):
+        if self._timer.isActive():
+            self.stop()
+        else:
+            self.start()
+    
     def paintGL(self):
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
         gl.glColor(0.6,0.8,1.0)
