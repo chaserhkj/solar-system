@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 import PyQt4.QtOpenGL as qgl
 import PyQt4.QtCore as c
+import PyQt4.QtGui as g
 import OpenGL.GL as gl
 import OpenGL.GLU as glu
 import OpenGL.GLUT as glut
@@ -38,6 +39,15 @@ class DisplayWidget(qgl.QGLWidget):
         self._timer.timeout.connect(self.run)
 
         self._fs = False
+
+        self._fs_sc = g.QShortcut("f",self)
+        self._fs_sc.activated.connect(self.toggleFullScreen)
+
+        self._exit_sc1 = g.QShortcut("q",self)
+        self._exit_sc1.activated.connect(self.close)
+        self._exit_sc2 = g.QShortcut("Esc",self)
+        self._exit_sc2.activated.connect(self.close)
+        
         
     def run(self):
         for i in xrange(self._stepc):
@@ -49,7 +59,8 @@ class DisplayWidget(qgl.QGLWidget):
             self.showNormal()
         else:
             self.showFullScreen()
-    
+        self._fs = not self._fs
+            
     def start(self):
         self._timer.start(self._interval)
         
