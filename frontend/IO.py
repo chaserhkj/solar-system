@@ -10,6 +10,7 @@ if not _no_runtime:
     class RuntimeIO(object):
         def __init__(self):
             self.celas = None
+            self.gradius_list = None
             self.N = 0
 
         def load(self, filename):
@@ -18,6 +19,7 @@ if not _no_runtime:
 
             self.N = len(data)    
             self.celas = galaxy.celaArray(self.N)
+            self.gradius_list = []
             for i in xrange(self.N):
                 p = galaxy.vector(data[i]["position"][0],
                                   data[i]["position"][1],
@@ -27,7 +29,9 @@ if not _no_runtime:
                                   data[i]["velocity"][2])
                 self.celas[i] = galaxy.cela(i, p, v,
                                             data[i]["mass"],
+                                            data[i]["radius"],
                                             data[i]["name"])
+                self.gradius_list.append(data[i]["graphic_radius"])
 
         def save(self, filename):
             data_list = []
@@ -38,8 +42,10 @@ if not _no_runtime:
                         "velocity": [self.celas[i].v.x,
                                      self.celas[i].v.y,
                                      self.celas[i].v.z],
+                        "radius": self.celas[i].r,
                         "mass": self.celas[i].m,
-                        "name": self.celas[i].name
+                        "name": self.celas[i].name,
+                        "graphic_radius": self.gradius_list[i]
                 }
                 data_list.append(data)
 
