@@ -1,16 +1,25 @@
 import Display
 import galaxy
+import math
 from PyQt4.QtGui import QApplication
 
-sun = galaxy.cela(0, galaxy.vector(0,0,0), galaxy.vector(0,0,0),1,0.001,"Sun")
-earth = galaxy.cela(0, galaxy.vector(10,0,0), galaxy.vector(0,1,0),0.01,0.001,"Earth")
-array = galaxy.celaArray(2)
+array = galaxy.celaArray(20)
+size=[14]
+sun = galaxy.cela(0, galaxy.vector(0,0,0), galaxy.vector(0,0,0),1000000,1,"Sun")
 array[0] = sun
-array[1] = earth
-g = galaxy.galaxy(2, array, 0.1, 10)
+for i in xrange(1,10):
+    array[i] = galaxy.cela(i, galaxy.vector(40*i,0,0),
+            galaxy.vector(0,math.sqrt(2500/i),0),1,1,"Earth"+str(i))
+    size.append(6)
+array[10]=galaxy.cela(11, galaxy.vector(60,0,0),
+        galaxy.vector(0,55,0),0.1,1,"Comet")
+size.append(4)
+g = galaxy.galaxy(11, array, 0.01, 0.1, aplfx=False)
 
 app = QApplication([])
-d = Display.DisplayWidget(g,[0.5, 0.5] ,10,plane_scale = 20)
+d = Display.DisplayWidget(g,size ,scale=400,plane_scale =
+        600,cell_density=20)
 d.show()
 d.start()
+#d.toggleFullScreen()
 app.exec_()
