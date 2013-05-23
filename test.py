@@ -14,7 +14,7 @@ for i in xrange(1,10):
 array[10]=galaxy.cela(11, galaxy.vector(60,0,0),
         galaxy.vector(0,0,55),0.1,1,"Comet")
 size.append(4)
-g = galaxy.galaxy(11, array, 0.01, G=0.1, r=6, o=0.1, aplfx=False)
+g = galaxy.galaxy(11, array, step=0.01, G=0.1, t=0, r=6, o=0.1, aplfx=False)
 
 app = QApplication([])
 d = Display.DisplayWidget(g,size ,scale=400,plane_scale =
