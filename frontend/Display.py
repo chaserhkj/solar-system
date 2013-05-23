@@ -95,13 +95,15 @@ class DisplayWidget(qgl.QGLWidget):
 
         self._trace_f_sc = g.QShortcut("t", self, self._trace_f)
         self._trace_b_sc = g.QShortcut("g", self, self._trace_b)
-
+        self._trace_v_sc = g.QShortcut("b", self, self.toggleTraceV)
+        
         self._reset_sc = g.QShortcut("/", self, self._reset_view)
         
         self._pause_sc = g.QShortcut("Space", self, self.togglePaused)
         
         self._trace = -1
-
+        self._trace_v = False
+        
         self._reset()
 
     def _reset(self):
@@ -223,6 +225,9 @@ class DisplayWidget(qgl.QGLWidget):
         self.setCamera()
         self.updateGL()
 
+    def toggleTraceV(self):
+        self._trace_v = not self._trace_v
+        
     def toggleFullScreen(self):
         if self._fs:
             self.showNormal()
@@ -241,7 +246,13 @@ class DisplayWidget(qgl.QGLWidget):
             self.stop()
         else:
             self.start()
-    
+
+    def _get_phi_by_v(self, vx , vy):
+        if vx > 0:
+            return 180 + cmath.atan(vy / vx).real / cmath.pi * 180
+        else:
+            return 360 + cmath.atan(vy / vx).real / cmath.pi * 180
+            
     def paintGL(self):
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
 
@@ -252,6 +263,8 @@ class DisplayWidget(qgl.QGLWidget):
             self._dx = array[self._trace].p.x * self._scale_factor
             self._dy = array[self._trace].p.y * self._scale_factor
             self._dz = array[self._trace].p.z * self._scale_factor
+            if self._trace_v:
+                self._phi = self._get_phi_by_v(array[self._trace].v.x, array[self._trace].v.y)
             self.setCamera()
         
         gl.glColor(*self._planec)
