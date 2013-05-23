@@ -24,6 +24,11 @@ vpath %.py frontend
 
 .PHONY: clean
 
+all: dist test
+
+test: test.py dist
+	$(CP) $< dist
+
 dist: $(BACKEND_DIST) $(FRONTEND_DIST)
 	$(MKDIR) dist
 	$(CP) $? dist
