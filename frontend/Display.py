@@ -5,6 +5,7 @@ import PyQt4.QtGui as g
 import OpenGL.GL as gl
 import OpenGL.GLU as glu
 import OpenGL.GLUT as glut
+import cmath
 import galaxy
 
 class ValueDisplayWidget(g.QWidget):
@@ -64,39 +65,110 @@ class DisplayWidget(qgl.QGLWidget):
         self._fs_sc = g.QShortcut("f",self)
         self._fs_sc.activated.connect(self.toggleFullScreen)
 
-        self._exit_sc1 = g.QShortcut("q",self)
-        self._exit_sc1.activated.connect(self.close)
-        self._exit_sc2 = g.QShortcut("Esc",self)
-        self._exit_sc2.activated.connect(self._esc_handler)
+        self._exit_sc1 = g.QShortcut("q",self, self.close)
+        self._exit_sc2 = g.QShortcut("Esc",self, self._esc_handler)
 
-        self._zoomin_sc = g.QShortcut("Ctrl+=",self)
-        self._zoomin_sc.activated.connect(self._zoomin_handler)
-        self._zoomout_sc = g.QShortcut("Ctrl+-",self)
-        self._zoomout_sc.activated.connect(self._zoomout_handler)
-        self._zoomreset_sc = g.QShortcut("Ctrl+0",self)
-        self._zoomreset_sc.activated.connect(self._zoomreset_handler)
+        self._zoomin_sc = g.QShortcut("=",self, self._zoomin)
+        self._zoomout_sc = g.QShortcut("-",self, self._zoomout)
+        self._zoomreset_sc = g.QShortcut("0",self, self._zoomreset)
+
+        self._upa_sc = g.QShortcut("Up", self, self._moveupa)
+        self._downa_sc = g.QShortcut("Down", self, self._movedowna)
+        self._lefta_sc = g.QShortcut("Left", self, self._movelefta)
+        self._righta_sc = g.QShortcut("Right", self, self._moverighta)
+        self._rin_sc = g.QShortcut("Ctrl+=",self, self._rin)
+        self._rout_sc = g.QShortcut("Ctrl+-",self, self._rout)
+        self._rreset_sc = g.QShortcut("Ctrl+0",self, self._rreset)
+        
+        self._up_sc = g.QShortcut("w", self, self._moveup)
+        self._down_sc = g.QShortcut("s", self, self._movedown)
+        self._left_sc = g.QShortcut("a", self, self._moveleft)
+        self._right_sc = g.QShortcut("d", self, self._moveright)
+        
         
         self._view_angle = 30
-        self._camera_p = [2, 2, 2, 0, 0 ,0, -1 , -1, 0]
+        
+        self._x = 0
+        self._y = 0
+        self._rho = 3
+        self._theta = 45
+        self._phi = 45
+
         
     def _esc_handler(self):
         if self._fs:
             self.toggleFullScreen()
         else:
             self.close()
+            
+    def _moveup(self):
+        self._y = self._y - 0.05  
+        self.makeCurrent()
+        self.setCamera()
 
-    def _zoomin_handler(self):
+    def _movedown(self):
+        self._y = self._y + 0.05
+        self.makeCurrent()
+        self.setCamera()
+
+    def _moveleft(self):
+        self._x = self._x + 0.05
+        self.makeCurrent()
+        self.setCamera()
+
+    def _moveright(self):
+        self._x = self._x - 0.05
+        self.makeCurrent()
+        self.setCamera()
+
+    def _rin(self):
+        self._rho = self._rho - 0.5
+        self.makeCurrent()
+        self.setCamera()
+        
+        
+    def _rout(self):
+        self._rho = self._rho + 0.5
+        self.makeCurrent()
+        self.setCamera()
+    
+    def _rreset(self):
+        self._rho = 3
+        self.makeCurrent()
+        self.setCamera()
+
+    def _moveupa(self):
+        self._theta = self._theta - 1
+        self.makeCurrent()
+        self.setCamera()
+
+    def _movedowna(self):
+        self._theta = self._theta + 1
+        self.makeCurrent()
+        self.setCamera()
+        
+    def _movelefta(self):
+        self._phi = self._phi - 1
+        self.makeCurrent()
+        self.setCamera()
+
+    def _moverighta(self):
+        self._phi = self._phi + 1
+        self.makeCurrent()
+        self.setCamera()
+            
+    def _zoomin(self):
         self._view_angle = self._view_angle - 2
         self.makeCurrent()
         self.setCamera()
         
-    def _zoomout_handler(self):
+    def _zoomout(self):
         self._view_angle = self._view_angle + 2
         self.makeCurrent()
         self.setCamera()
 
-    def _zoomreset_handler(self):
-        self._view_angle = 30
+    def _zoomreset(self):
+        self._view_angle = 45
         self.makeCurrent()
         self.setCamera()
 
@@ -159,7 +231,12 @@ class DisplayWidget(qgl.QGLWidget):
         glu.gluPerspective(self._view_angle, self._aspect, 0, 100)
         gl.glMatrixMode(gl.GL_MODELVIEW)
         gl.glLoadIdentity()
-        glu.gluLookAt(*self._camera_p)
+        gl.glTranslate(self._x, self._y, 0)
+        glu.gluLookAt(self._rho * cmath.sin(self._theta /180.0 * cmath.pi).real * cmath.cos(self._phi /180.0 * cmath.pi).real,
+                      self._rho * cmath.sin(self._theta /180.0 * cmath.pi).real * cmath.sin(self._phi /180.0 * cmath.pi).real,
+                      self._rho * cmath.cos(self._theta /180.0 * cmath.pi).real,
+                      0, 0, 0,
+                      0, 0, 1)
         gl.glScale(self._scale_factor,
                    self._scale_factor,
                    self._scale_factor)
