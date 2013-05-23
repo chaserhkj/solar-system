@@ -12,13 +12,11 @@ class ValueDisplayWidget(g.QWidget):
         g.QWidget.__init__(self,parent)
 
         self._galaxy = galaxy_obj
-        tL = g.QLabel("", self)
-        eL = g.QLabel("",self)
+        self._t = g.QLabel("", self)
+        self._e = g.QLabel("",self)
 
         self._layout = g.QVBoxLayout()
-        self._layout.addWidget(tL) 
         self._layout.addWidget(self._t)
-        self._layout.addWidget(eL)
         self._layout.addWidget(self._e)
         self.setLayout(self._layout)
         
