@@ -12,7 +12,7 @@ class DisplayWidget(qgl.QGLWidget):
                  gradius_list,
                  scale,
                  step_count = 10,
-                 interval = 100,
+                 interval = 20,
                  plane_scale = None,
                  cell_density = 10,
                  fullscreen = False,
