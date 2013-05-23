@@ -1,4 +1,5 @@
 #include <cmath>
+#include <omp.h>
 #include "galaxy.h"
 
 void cela::newp1(double dt)
@@ -163,7 +164,7 @@ void galaxy::run()
             celas[i].newp1(dt);
         }
         for (i=0;i<n;i++) {
-            celas[i].a = (celas[i].a + getacc1(i)) / 2;
+            celas[i].a = celas[i].a * 3 / 4 + getacc1(i) / 4;
         }
     }
 
