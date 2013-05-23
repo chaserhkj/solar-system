@@ -123,7 +123,7 @@ class DisplayWidget(qgl.QGLWidget):
             gl.glPushMatrix()
             gl.glTranslate(array[i].p.x,
                            array[i].p.y,
-                           0)
+                           array[i].p.z)
             glut.glutWireSphere(gr, 10, 10)
             gl.glPopMatrix()
             
@@ -131,7 +131,7 @@ class DisplayWidget(qgl.QGLWidget):
         glut.glutInit([])
         gl.glClearColor(0,0,0,0)
         gl.glShadeModel(gl.GL_FLAT)
-        
+
     def resizeGL(self, w, h):
         gl.glViewport(0, 0, w, h)
         gl.glMatrixMode(gl.GL_PROJECTION)
