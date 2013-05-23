@@ -15,7 +15,6 @@ class DisplayWidget(qgl.QGLWidget):
                  interval = 20,
                  plane_scale = None,
                  cell_density = 10,
-                 fullscreen = False,
                  parent = None):
         qgl.QGLWidget.__init__(self, parent)
         self.setWindowTitle("Demo")
@@ -38,11 +37,7 @@ class DisplayWidget(qgl.QGLWidget):
         self._timer = c.QTimer(self)
         self._timer.timeout.connect(self.run)
 
-        if fullscreen:
-            self.showFullScreen()
-            self._fs = True
-        else:
-            self._fs = False
+        self._fs = False
         
     def run(self):
         for i in xrange(self._stepc):
