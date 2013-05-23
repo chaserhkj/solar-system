@@ -13,6 +13,7 @@ public:
     string name; //Optional
     double m; //Mass
     double r; //Radius
+    bool c; //Collision flag
     vector p; //Position
     vector p1; //Position used for recursive calculation
     vector v; //Velocity
@@ -36,23 +37,25 @@ private:
     double ek; // System Kinetic energy
     double ep; // System Potential energy
     double e0; // System initial total energy
+    double t; // Physical time
 
     int recurdepth; // Recursion depth
     bool applyenergyfix;
 
-    vector getacc(int i); // Get accelration for celas[i] based on p
+    void setacc(int i); // Set accelration and collision flag for celas[i] based on p
     vector getacc1(int i); // Get accelration for celas[i] based on p1
 
     void calculateEnergy(); // Calculate system energy
 
 public:
-    galaxy(int n, cela* stars, double step=1, double G=1, int recdpt=0, bool aplfx=false);
+    galaxy(int n, cela* stars, double step=1, double G=1, double t=0, int recdpt=0, bool aplfx=false);
     ~galaxy(); 
 
     void setGravity(double gc);
     void setTimeStep(double step);
     void run();
     int getCelaNum();
+    double getTime(); //Get Physical time
     double getEnergy(); // Get system total energy
     cela* output();
 };

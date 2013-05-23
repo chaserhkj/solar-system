@@ -12,8 +12,8 @@ void cela::flush(double dt)
     p = p1;
 }
 
-galaxy::galaxy(int n, cela* stars, double step, double G, int
-        recdpt, bool aplfx):n(n), dt(step), G(G), recurdepth(recdpt), applyenergyfix(aplfx)
+galaxy::galaxy(int n, cela* stars, double step, double G, double t, int
+        recdpt, bool aplfx):n(n), dt(step), G(G), t(t), recurdepth(recdpt), applyenergyfix(aplfx)
 {
     celas = new cela[n];
     int i;
@@ -45,30 +45,51 @@ int galaxy::getCelaNum()
     return n;
 }
 
+double galaxy::getTime()
+{
+    return t;
+}
+
 cela* galaxy::output(){
     return celas;
 }
 
-vector galaxy::getacc(int i)
+void galaxy::setacc(int i)
 {
     int j;
     vector r; //vector distance
     double d; //distance
     vector acc(0,0,0);
+    vector epi; // unit vector in direction of p[j]-p[i]
+    vector dvi,dvj;
+
+    //if (celas[i].c) { //Collided with another cela. acceleration already calculated
+    //    return;
+    //}
 
     for (j=0;j<n;j++) { // cela[j]'s gravity on cela[i]
         if (j != i) { //Not myself
             r = celas[j].p - celas[i].p;
             d = r.mag();
-            if (d < (celas[i].r + celas[j].r)) {  //Collision
-                return 0;            
+            epi = r / d;
+            if (d <= (celas[i].r + celas[j].r)) {  
+                if (!celas[j].c && !celas[i].c) { //Collision with uncollided one
+                celas[i].c = true;
+                celas[j].c = true;
+                dvj = 2 * celas[i].m / (celas[j].m + celas[i].m) * (celas[i].v - celas[j].v) * epi * epi;
+                dvi = 2 * celas[j].m / (celas[j].m + celas[i].m) * (celas[j].v - celas[i].v) * epi * epi;
+                celas[i].v += dvi;
+                celas[j].v += dvj;
+                }
+                acc += G * celas[j].m * epi / ((celas[i].r + celas[j].r) * (celas[i].r + celas[j].r)); 
             } else {
-                acc += G * celas[j].m * r / (d * d * d);
+                acc += G * celas[j].m * epi / (d * d);
             }
         }
     }
 
-    return acc;
+    celas[i].a = acc;
+    return;
 }
 
 
@@ -78,12 +99,22 @@ vector galaxy::getacc1(int i)
     vector r; //vector distance
     double d; //distance
     vector acc(0,0,0);
+    vector epi; // unit vector in direction of p[j]-p[i]
+
+    if (celas[i].c) { //Collided in this stepi
+        return celas[i].a;
+    }
 
     for (j=0;j<n;j++) { // cela[j]'s gravity on cela[i]
         if (j != i) { //Not myself
             r = celas[j].p1 - celas[i].p1;
             d = r.mag();
-            acc += G * celas[j].m * r / (d * d * d);
+            epi = r / d;
+            if (d <= (celas[i].r + celas[j].r)) {  
+                acc += G * celas[j].m * epi / ((celas[i].r + celas[j].r) * (celas[i].r + celas[j].r)); 
+            } else {
+                acc += G * celas[j].m * epi / (d * d);
+            }
         }
     }
 
@@ -119,8 +150,13 @@ void galaxy::run()
     double co; // fix coefficient
 
     for (i=0;i<n;i++) {
-        celas[i].a = getacc(i);
+        celas[i].c = false;
     }
+
+    for (i=0;i<n;i++) {
+        setacc(i);
+    }
+
 
     for (rec=0;rec<recurdepth;rec++) { //Recursive calculation
         for (i=0;i<n;i++) {
@@ -143,4 +179,6 @@ void galaxy::run()
             celas[i].v *= co;
         }
     }
+
+    t += dt;
 }

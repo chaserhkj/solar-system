@@ -41,7 +41,9 @@ public:
     string name; //Optional
     double m; //Mass
     double r; //Radius
+    bool c; //Collision flag
     vector p; //Position
+    vector p1; //Position used for recursive calculation
     vector v; //Velocity
     vector a; //Acceleration
 
@@ -53,13 +55,14 @@ public:
 class galaxy
 {
 public:
-    galaxy(int n, cela* stars, double step=1, double G=1, int recdpt=0, bool aplfx=false);
+    galaxy(int n, cela* stars, double step=1, double G=1, double t=0, int recdpt=0, bool aplfx=false);
     ~galaxy(); 
 
     void setGravity(double gc);
     void setTimeStep(double step);
     void run();
     int getCelaNum();
+    double getTime(); //Get Physical time
     double getEnergy(); // Get system total energy
     cela* output();
 };
