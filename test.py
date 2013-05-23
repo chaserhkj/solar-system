@@ -21,5 +21,4 @@ d = Display.DisplayWidget(g,size ,scale=400,plane_scale =
         600,cell_density=20)
 d.show()
 d.start()
-#d.toggleFullScreen()
 app.exec_()
