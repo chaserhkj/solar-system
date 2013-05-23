@@ -1,5 +1,5 @@
 CXX := g++ -c
-CFLAGS := $(CFLAGS) -fpic -Wall -Wextra
+CFLAGS := $(CFLAGS) -fpic -fopenmp -Wall -Wextra
 CXXFLAGS := $(CFLAGS)
 BACKEND_INCLUDE := -I./backend/
 PYTHON_INCLUDE := -I/usr/include/python2.7
