@@ -13,19 +13,55 @@ class ValueDisplayWidget(g.QWidget):
         g.QWidget.__init__(self,parent)
 
         self._galaxy = galaxy_obj
-        self._t = g.QLabel("", self)
-        self._e = g.QLabel("",self)
+        self._t = g.QLabel("")
+        self._e = g.QLabel("")
 
         self._layout = g.QVBoxLayout()
         self._layout.addWidget(self._t)
         self._layout.addWidget(self._e)
+
+        self._no = g.QLabel("")
+        self._x = g.QLabel("")
+        self._y = g.QLabel("")
+        self._z = g.QLabel("")
+        self._vx = g.QLabel("")
+        self._vy = g.QLabel("")
+        self._vz = g.QLabel("")
+        self._layout.addWidget(self._no)
+        self._layout.addWidget(self._x)
+        self._layout.addWidget(self._y)
+        self._layout.addWidget(self._z)
+        self._layout.addWidget(self._vx)
+        self._layout.addWidget(self._vy)
+        self._layout.addWidget(self._vz)
+
+        self._trace = -1
         self.setLayout(self._layout)
-        
         self.updateValue()
+
+    def setTrace(self, trace):
+        self._trace = trace
         
     def updateValue(self):
-        self._t.setText("Time: %s"%str(self._galaxy.getTime()))
-        self._e.setText("Energy: %s"%str(self._galaxy.getEnergy()))
+        if self._trace == -1:
+            self._no.setText("Tracing disabled.")
+            self._x.setText("")
+            self._y.setText("")
+            self._z.setText("")
+            self._vx.setText("")
+            self._vy.setText("")
+            self._vz.setText("")
+        else:
+            array = galaxy.celaArray_frompointer(self._galaxy.output())
+            self._no.setText("Tracing object: %s"%self._trace)
+            self._x.setText("X: %s"%array[self._trace].p.x)
+            self._y.setText("Y: %s"%array[self._trace].p.y)
+            self._z.setText("Z: %s"%array[self._trace].p.z)
+            self._vx.setText("Vx: %s"%array[self._trace].v.x)
+            self._vy.setText("Vy: %s"%array[self._trace].v.y)
+            self._vz.setText("Vz: %s"%array[self._trace].v.z)
+        self._t.setText("Time: %s"%self._galaxy.getTime())
+        self._e.setText("Energy: %s"%self._galaxy.getEnergy())
         
 class DisplayWidget(qgl.QGLWidget):
     def __init__(self,
@@ -129,13 +165,17 @@ class DisplayWidget(qgl.QGLWidget):
         self._trace = self._trace + 1
         if self._trace == self._n:
             self._trace = -1
+        self._vDisplay.setTrace(self._trace)
         self.updateGL()
+        self._vDisplay.updateValue()
 
     def _trace_b(self):
         self._trace = self._trace - 1
         if self._trace == -2:
             self._trace = self._n - 1
+        self._vDisplay.setTrace(self._trace)
         self.updateGL()
+        self._vDisplay.updateValue()
             
     def _inx(self):
         self._dx = self._dx + 0.05
@@ -353,8 +393,8 @@ class DisplayWidget(qgl.QGLWidget):
     def setTraceCela(self,celaN):
         if celaN < -1 or celaN >= self._n :
             raise ValueError
-
         self._trace = celaN
+        self._vDisplay.setTrace(celaN)
 
     def initializeGL(self):
         glut.glutInit([])
