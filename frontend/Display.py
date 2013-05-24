@@ -10,7 +10,7 @@ import galaxy
 
 class ValueDisplayWidget(g.QWidget):
     def __init__(self, galaxy_obj, parent=None):
-        g.QWidget.__init__(self,parent)
+        g.QWidget.__init__(self,parent, c.Qt.Window)
 
         self._galaxy = galaxy_obj
         self._t = g.QLabel("")
@@ -45,15 +45,19 @@ class ValueDisplayWidget(g.QWidget):
     def updateValue(self):
         if self._trace == -1:
             self._no.setText("Tracing disabled.")
-            self._x.setText("")
-            self._y.setText("")
-            self._z.setText("")
-            self._vx.setText("")
-            self._vy.setText("")
-            self._vz.setText("")
+            self._x.setText("Object count: %s"%self._galaxy.getCelaNum())
+            self._y.setText("Gravity constant: %s"%self._galaxy.getG())
+            self._z.setText("Calculation step: %s"%self._galaxy.getStep())
+            self._vx.setText("Recursive depth: %s"%self._galaxy.getRecDpt())
+            self._vy.setText("Recursive coefficient: %s"%self._galaxy.getOmega())
+            self._vz.setText("Fix applied: %s"%self._galaxy.appliedfix())
         else:
             array = galaxy.celaArray_frompointer(self._galaxy.output())
-            self._no.setText("Tracing object: %s"%self._trace)
+            if array[self._trace].name == "":
+                name = "No. %s"%self._trace
+            else:
+                name = array[self._trace].name
+            self._no.setText("Tracing object: %s"%name)
             self._x.setText("X: %s"%array[self._trace].p.x)
             self._y.setText("Y: %s"%array[self._trace].p.y)
             self._z.setText("Z: %s"%array[self._trace].p.z)
@@ -93,7 +97,8 @@ class DisplayWidget(qgl.QGLWidget):
         self._planec = plane_color
         
         self._vDisplay = ValueDisplayWidget(self._galaxy, self)
-            
+        self._vDisplay.show()
+        
         self._timer = c.QTimer(self)
         self._timer.timeout.connect(self.run)
         self._timer.timeout.connect(self._vDisplay.updateValue)
