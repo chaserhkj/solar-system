@@ -81,7 +81,7 @@ class DisplayWidget(qgl.QGLWidget):
                  plane_scale = None,
                  plane_color = [0.6,0.8,1.0],
                  cell_density = 10,
-                 axis_length = 10,
+                 axis_length = None,
                  axis_color = [1, 1 ,1],
                  parent = None):
         qgl.QGLWidget.__init__(self, parent)
@@ -103,7 +103,10 @@ class DisplayWidget(qgl.QGLWidget):
             self._celld = cell_density
         self._planec = plane_color
 
-        self._axisl = axis_length
+        if axis_length == None:
+            self._axisl = cell_density
+        else:
+            self._axisl = axis_length
         self._axisc = axis_color
         
         self._timer = c.QTimer(self)
