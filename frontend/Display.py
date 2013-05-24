@@ -86,6 +86,8 @@ class DisplayWidget(qgl.QGLWidget):
                  axis_color = [1, 1 ,1],
                  shadow_line = False,
                  line_interval = 5,
+                 smooth = 0,
+                 light = False,
                  parent = None):
         qgl.QGLWidget.__init__(self, parent)
         self.setWindowTitle("Display")
@@ -114,6 +116,14 @@ class DisplayWidget(qgl.QGLWidget):
         self._axisc = axis_color
         self._shadow = shadow_line
         self._line_int = line_interval
+
+        self._smooth = smooth
+        self._light = light
+
+        if smooth != 0:
+            fmt = qgl.QGLFormat()
+            fmt.setSampleBuffers(True)
+            self.setFormat(fmt)
         
         self._timer = c.QTimer(self)
         self._timer.timeout.connect(self.run)
@@ -526,6 +536,22 @@ class DisplayWidget(qgl.QGLWidget):
         gl.glClearColor(0,0,0,0)
         gl.glClearDepth(1.0)
         gl.glShadeModel(gl.GL_FLAT)
+        if self._smooth != 0:
+            gl.glEnable(gl.GL_MULTISAMPLE)
+        if self._smooth == 1:
+            gl.glEnable(gl.GL_POINT_SMOOTH)
+            gl.glEnable(gl.GL_LINE_SMOOTH)
+            gl.glEnable(gl.GL_POLYGON_SMOOTH)
+            gl.glHint(gl.GL_POINT_SMOOTH_HINT, gl.GL_FASTEST)
+            gl.glHint(gl.GL_LINE_SMOOTH_HINT, gl.GL_FASTEST)
+            gl.glHint(gl.GL_POLYGON_SMOOTH_HINT, gl.GL_FASTEST)
+        if self._smooth == 2:
+            gl.glEnable(gl.GL_POINT_SMOOTH)
+            gl.glEnable(gl.GL_LINE_SMOOTH)
+            gl.glEnable(gl.GL_POLYGON_SMOOTH)
+            gl.glHint(gl.GL_POINT_SMOOTH_HINT, gl.GL_NICEST)
+            gl.glHint(gl.GL_LINE_SMOOTH_HINT, gl.GL_NICEST)
+            gl.glHint(gl.GL_POLYGON_SMOOTH_HINT, gl.GL_NICEST)
 
     def setCamera(self):
         gl.glMatrixMode(gl.GL_PROJECTION)

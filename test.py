@@ -17,8 +17,8 @@ graphic.append({"radius":4,"color":[0,0,1]})
 g = galaxy.galaxy(11, array, step=0.01, G=0.1, t=0, r=69, o=0.01, aplfx=False)
 
 app = QApplication([])
-d = Display.DisplayWidget(g,graphic ,scale=400,plane_scale =
-        600,cell_density=20,interval=20)
+d = Display.DisplayWidget(g,graphic ,scale=400,smooth = 2,plane_scale =
+        600,cell_density=20,interval=20,shadow_line = False, trace_buffer=2000, line_interval=5)
 d.show()
 d.start()
 app.exec_()
