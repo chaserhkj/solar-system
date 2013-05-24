@@ -56,18 +56,18 @@ class ValueDisplayWidget(g.QWidget):
             self._vy.setText("Recursive coefficient: %s"%self._galaxy.getOmega())
             self._vz.setText("Fix applied: %s"%self._galaxy.appliedfix())
         else:
-            array = galaxy.celaArray_frompointer(self._galaxy.output())
-            if array[self._trace].name == "":
+            _array = galaxy.celaArray_frompointer(self._galaxy.output())
+            if _array[self._trace].name == "":
                 name = "No. %s"%self._trace
             else:
-                name = array[self._trace].name
+                name = _array[self._trace].name
             self._no.setText("Tracing object: %s"%name)
-            self._x.setText("X: %s"%array[self._trace].p.x)
-            self._y.setText("Y: %s"%array[self._trace].p.y)
-            self._z.setText("Z: %s"%array[self._trace].p.z)
-            self._vx.setText("Vx: %s"%array[self._trace].v.x)
-            self._vy.setText("Vy: %s"%array[self._trace].v.y)
-            self._vz.setText("Vz: %s"%array[self._trace].v.z)
+            self._x.setText("X: %s"%_array[self._trace].p.x)
+            self._y.setText("Y: %s"%_array[self._trace].p.y)
+            self._z.setText("Z: %s"%_array[self._trace].p.z)
+            self._vx.setText("Vx: %s"%_array[self._trace].v.x)
+            self._vy.setText("Vy: %s"%_array[self._trace].v.y)
+            self._vz.setText("Vz: %s"%_array[self._trace].v.z)
         self._t.setText("Time: %s"%self._galaxy.getTime())
         self._e.setText("Energy: %s"%self._galaxy.getEnergy())
         
@@ -150,6 +150,7 @@ class DisplayWidget(qgl.QGLWidget):
         self._trace_b_sc = g.QShortcut("g", self, self._trace_b)
         self._trace_v_sc = g.QShortcut("b", self, self.toggleTraceV)
         self._trace_quit_sc = g.QShortcut("z", self,self._trace_quit)
+        self._trace_line_sc = g.QShortcut("x",self, self._trace_line_handler)
         
         self._reset_sc = g.QShortcut("/", self, self._reset_view)
         
@@ -182,7 +183,17 @@ class DisplayWidget(qgl.QGLWidget):
         self._reset()
         self._updateCamera()
         
+    def _clear_trace_buffer(self):
+        del self._trace_buffer
+        self._trace_buffer = array.array("d")
+
+    def _trace_line_handler(self):
+        self._trace_line = not self._trace_line
+        self._clear_trace_buffer()
+        self.updateGL()
+        
     def _trace_f(self):
+        self._clear_trace_buffer()    
         self._trace = self._trace + 1
         if self._trace == self._n:
             self._trace = -1
@@ -191,6 +202,7 @@ class DisplayWidget(qgl.QGLWidget):
         self._vDisplay.updateValue()
 
     def _trace_b(self):
+        self._clear_trace_buffer()
         self._trace = self._trace - 1
         if self._trace == -2:
             self._trace = self._n - 1
@@ -199,6 +211,7 @@ class DisplayWidget(qgl.QGLWidget):
         self._vDisplay.updateValue()
 
     def _trace_quit(self):
+        self._clear_trace_buffer()
         self._trace = -1
         self._vDisplay.setTrace(self._trace)
         self.updateGL()
@@ -382,15 +395,15 @@ class DisplayWidget(qgl.QGLWidget):
     def paintGL(self):
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
 
-        array = galaxy.\
+        _array = galaxy.\
                 celaArray_frompointer(self._galaxy.\
                                       output())
         if self._trace >= 0:
-            self._dx = array[self._trace].p.x * self._scale_factor
-            self._dy = array[self._trace].p.y * self._scale_factor
-            self._dz = array[self._trace].p.z * self._scale_factor
+            self._dx = _array[self._trace].p.x * self._scale_factor
+            self._dy = _array[self._trace].p.y * self._scale_factor
+            self._dz = _array[self._trace].p.z * self._scale_factor
             if self._trace_v:
-                self._phi, self._theta = self._get_angle_by_v(array[self._trace].v)
+                self._phi, self._theta = self._get_angle_by_v(_array[self._trace].v)
             self.setCamera()
         
         gl.glColor(*self._planec)
@@ -453,9 +466,9 @@ class DisplayWidget(qgl.QGLWidget):
                 drawfunc = glut.glutWireSphere
                 
             gl.glPushMatrix()
-            gl.glTranslate(array[i].p.x,
-                           array[i].p.y,
-                           array[i].p.z)
+            gl.glTranslate(_array[i].p.x,
+                           _array[i].p.y,
+                           _array[i].p.z)
             drawfunc(graphic["radius"], 8, 8)
             if i == self._trace:
                 gl.glColor(0.0,1.0,0.0)
@@ -466,7 +479,23 @@ class DisplayWidget(qgl.QGLWidget):
                 gl.glColor(1.0,1.0,1.0) 
                 glut.glutWireOctahedron()
             gl.glPopMatrix()
-
+            if i == self._trace and self._trace_line:
+                if self._timer.isActive():
+                    self._trace_buffer.append(_array[i].p.x)
+                    self._trace_buffer.append(_array[i].p.y)
+                    self._trace_buffer.append(_array[i].p.z)
+                    if len(self._trace_buffer) > self._trace_buffer_size:
+                        self._trace_buffer.pop(0)
+                        self._trace_buffer.pop(0)
+                        self._trace_buffer.pop(0)
+                gl.glColor(*self._axisc)
+                gl.glBegin(gl.GL_LINE_STRIP)
+                for i in xrange(len(self._trace_buffer) / 3):
+                    gl.glVertex(self._trace_buffer[i * 3],
+                                self._trace_buffer[i * 3+ 1],
+                                self._trace_buffer[i * 3+ 2])
+                gl.glEnd()
+            
     def setTraceCela(self,celaN):
         if celaN < -1 or celaN >= self._n :
             raise ValueError
