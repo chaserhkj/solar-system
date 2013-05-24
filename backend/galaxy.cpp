@@ -41,6 +41,17 @@ void galaxy::setTimeStep(double step)
     dt = step;
 }
 
+bool galaxy::togglefix()
+{
+    if (applyenergyfix) {
+        applyenergyfix = false;
+    } else {
+        applyenergyfix = true;
+    }
+
+    return applyenergyfix;
+}
+
 int galaxy::getCelaNum()
 {
     return n;

@@ -43,7 +43,10 @@ public:
 
     void setGravity(double gc);
     void setTimeStep(double step);
+    bool togglefix();
+
     void run();
+
     int getCelaNum();
     double getTime(); //Get Physical time
     double getEnergy(); // Get system total energy
