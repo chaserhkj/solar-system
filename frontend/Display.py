@@ -5,7 +5,7 @@ import PyQt4.QtGui as g
 import OpenGL.GL as gl
 import OpenGL.GLU as glu
 import OpenGL.GLUT as glut
-import cmath
+import math
 import galaxy
 
 class ValueDisplayWidget(g.QWidget):
@@ -103,6 +103,8 @@ class DisplayWidget(qgl.QGLWidget):
         
         self._trace = -1
         self._trace_v = False
+
+        self._mouse_moving = -1
         
         self._reset()
 
@@ -247,12 +249,56 @@ class DisplayWidget(qgl.QGLWidget):
         else:
             self.start()
 
-    def _get_phi_by_v(self, vx , vy):
-        if vx > 0:
-            return 180 + cmath.atan(vy / vx).real / cmath.pi * 180
-        else:
-            return cmath.atan(vy / vx).real / cmath.pi * 180
-            
+    def mousePressEvent(self,event):
+        super(DisplayWidget, self).mousePressEvent(event)
+        if event.button() == c.Qt.LeftButton:
+            self._mouse_moving = 0
+        elif event.button() == c.Qt.MidButton:
+            self._mouse_moving = 1
+        elif event.button() == c.Qt.RightButton:
+            self._mouse_moving = 2
+        self._mouse_x = event.x()
+        self._mouse_y = event.y()
+        event.accept()
+        
+    def mouseMoveEvent(self, event):
+        super(DisplayWidget, self).mouseMoveEvent(event)
+        if self._trace != -1 and self._trace_v:
+            event.accept()
+            return
+        if self._mouse_moving == -1:
+            event.accept()
+            return
+        elif self._mouse_moving == 0:
+            self._phi = - (event.x() - self._mouse_x) / 10.0 + self._phi
+            self._theta = - (event.y() - self._mouse_y) / 10.0 + self._theta
+            self._updateCamera()
+        elif self._mouse_moving == 2:
+            self._x = (event.x() - self._mouse_x) / 800.0 + self._x
+            self._y = - (event.y() - self._mouse_y) / 800.0 + self._y
+            self._updateCamera()
+        self._mouse_x = event.x()
+        self._mouse_y = event.y()
+        event.accept()
+        
+    def mouseReleaseEvent(self, event):
+        super(DisplayWidget, self).mouseReleaseEvent(event)
+        if self._mouse_moving == 1:
+            self._reset_view()
+        self._mouse_moving = -1
+        event.accept()
+        
+    def wheelEvent(self,event):
+        step = event.delta() / 100.0
+        self._view_angle = self._view_angle - step
+        self._updateCamera()
+        event.accept()
+        
+    def _get_angle_by_v(self, v):
+        phi = 180 + math.degrees(math.atan2(v.y , v.x))
+        theta = 180 - math.degrees(math.atan2(math.sqrt(v.x**2 + v.y**2) ,v.z)) 
+        return phi, theta
+
     def paintGL(self):
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
 
@@ -264,7 +310,7 @@ class DisplayWidget(qgl.QGLWidget):
             self._dy = array[self._trace].p.y * self._scale_factor
             self._dz = array[self._trace].p.z * self._scale_factor
             if self._trace_v:
-                self._phi = self._get_phi_by_v(array[self._trace].v.x, array[self._trace].v.y)
+                self._phi, self._theta = self._get_angle_by_v(array[self._trace].v)
             self.setCamera()
         
         gl.glColor(*self._planec)
@@ -322,9 +368,9 @@ class DisplayWidget(qgl.QGLWidget):
         gl.glMatrixMode(gl.GL_MODELVIEW)
         gl.glLoadIdentity()
         gl.glTranslate(self._x, self._y, 0)
-        glu.gluLookAt(self._rho * cmath.sin(self._theta /180.0 * cmath.pi).real * cmath.cos(self._phi /180.0 * cmath.pi).real + self._dx,
-                      self._rho * cmath.sin(self._theta /180.0 * cmath.pi).real * cmath.sin(self._phi /180.0 * cmath.pi).real + self._dy,
-                      self._rho * cmath.cos(self._theta /180.0 * cmath.pi).real + self._dz,
+        glu.gluLookAt(self._rho * math.sin(math.radians(self._theta)) * math.cos(math.radians(self._phi)) + self._dx,
+                      self._rho * math.sin(math.radians(self._theta)) * math.sin(math.radians(self._phi)) + self._dy,
+                      self._rho * math.cos(math.radians(self._theta)) + self._dz,
                       self._dx, self._dy, self._dz,
                       0, 0, 1)
         gl.glScale(self._scale_factor,
