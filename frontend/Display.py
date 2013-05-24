@@ -138,6 +138,7 @@ class DisplayWidget(qgl.QGLWidget):
         self._trace_f_sc = g.QShortcut("t", self, self._trace_f)
         self._trace_b_sc = g.QShortcut("g", self, self._trace_b)
         self._trace_v_sc = g.QShortcut("b", self, self.toggleTraceV)
+        self._trace_quit_sc = g.QShortcut("Ctrl+b", self,self._trace_quit)
         
         self._reset_sc = g.QShortcut("/", self, self._reset_view)
         
@@ -184,7 +185,13 @@ class DisplayWidget(qgl.QGLWidget):
         self._vDisplay.setTrace(self._trace)
         self.updateGL()
         self._vDisplay.updateValue()
-            
+
+    def _trace_quit(self):
+        self._trace = -1
+        self._vDisplay.setTrace(self._trace)
+        self.updateGL()
+        self._vDisplay.updateValue()
+        
     def _inx(self):
         self._dx = self._dx + 0.05
         self._updateCamera()
