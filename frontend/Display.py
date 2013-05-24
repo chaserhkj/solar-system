@@ -504,7 +504,7 @@ class DisplayWidget(qgl.QGLWidget):
                     if self._shadow:
                         color = [float(k) / num * j for k in self._axisc]
                     else:
-                        color = [1.0, 1.0, 1.0]
+                        color = self._axisc
                     gl.glColor(*color)
                     gl.glVertex(self._trace_buffer[i][j * line_step],
                                 self._trace_buffer[i][j * line_step+ 1],
