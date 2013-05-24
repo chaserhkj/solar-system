@@ -81,6 +81,8 @@ class DisplayWidget(qgl.QGLWidget):
                  plane_scale = None,
                  plane_color = [0.6,0.8,1.0],
                  cell_density = 10,
+                 axis_length = 10,
+                 axis_color = [1, 1 ,1],
                  parent = None):
         qgl.QGLWidget.__init__(self, parent)
         self.setWindowTitle("Display")
@@ -100,6 +102,9 @@ class DisplayWidget(qgl.QGLWidget):
             self._planes = plane_scale
             self._celld = cell_density
         self._planec = plane_color
+
+        self._axisl = axis_length
+        self._axisc = axis_color
         
         self._timer = c.QTimer(self)
         self._timer.timeout.connect(self.run)
@@ -370,20 +375,49 @@ class DisplayWidget(qgl.QGLWidget):
         
         gl.glColor(*self._planec)
         step = self._planes / float(self._celld)
+        gl.glBegin(gl.GL_LINES)
         for i in xrange(2 * self._celld):
-            gl.glBegin(gl.GL_LINES)
             gl.glVertex(- self._planes + i*step,
                         - self._planes)
             gl.glVertex(- self._planes + i*step,
                         self._planes - step)
-            gl.glEnd()
         for i in xrange(2 * self._celld):
-            gl.glBegin(gl.GL_LINES)
             gl.glVertex(- self._planes,
                         - self._planes + i*step)
             gl.glVertex(self._planes - step,
                         - self._planes + i*step)
+
+        gl.glEnd()
+        if self._axisl > 0:
+            gl.glColor(*self._axisc)
+            gl.glBegin(gl.GL_LINES)
+            gl.glVertex(0,0,0)
+            gl.glVertex((self._axisl+1) * step, 0 ,0)
             gl.glEnd()
+            gl.glPushMatrix()
+            gl.glTranslate(self._axisl * step, 0, 0)
+            gl.glRotate(90, 0, 1, 0)
+            glut.glutWireCone(step / 4, step , 8, 8)
+            gl.glPopMatrix()
+
+            gl.glBegin(gl.GL_LINES)
+            gl.glVertex(0,0,0)
+            gl.glVertex(0,(self._axisl+1) * step, 0)
+            gl.glEnd()
+            gl.glPushMatrix()
+            gl.glTranslate(0, self._axisl * step, 0)
+            gl.glRotate(-90, 1, 0, 0)
+            glut.glutWireCone(step / 4, step , 8, 8)
+            gl.glPopMatrix()
+
+            gl.glBegin(gl.GL_LINES)
+            gl.glVertex(0,0,0)
+            gl.glVertex(0,0,(self._axisl+1) * step)
+            gl.glEnd()
+            gl.glPushMatrix()
+            gl.glTranslate(0,0,self._axisl * step)
+            glut.glutWireCone(step / 4, step , 8, 8)
+            gl.glPopMatrix()
 
         for i in xrange(self._n):
             graphic = self._graphic[i]
