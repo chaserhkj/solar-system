@@ -51,6 +51,31 @@ double galaxy::getTime()
     return t;
 }
 
+int galaxy::getRecDpt()
+{
+    return recurdepth;
+}
+
+double galaxy::getOmega()
+{
+    return omega;
+}
+
+double galaxy::getG()
+{
+    return G;
+}
+
+double galaxy::getStep()
+{
+    return dt;
+}
+
+bool galaxy::appliedfix()
+{
+    return applyenergyfix;
+}
+
 cela* galaxy::output(){
     return celas;
 }

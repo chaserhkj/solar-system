@@ -58,6 +58,12 @@ public:
     int getCelaNum();
     double getTime(); //Get Physical time
     double getEnergy(); // Get system total energy
+    int getRecDpt();
+    double getOmega();
+    double getG();
+    double getStep();
+    bool appliedfix(); // True if applied energy fix
+
     cela* output();
 };
 
