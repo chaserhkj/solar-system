@@ -86,6 +86,7 @@ class DisplayWidget(qgl.QGLWidget):
                  axis_color = [1, 1 ,1],
                  shadow_line = False,
                  line_interval = 5,
+                 line_width = 1,
                  smooth = 0,
                  light = False,
                  parent = None):
@@ -117,6 +118,7 @@ class DisplayWidget(qgl.QGLWidget):
         self._shadow = shadow_line
         self._line_int = line_interval
 
+        self._linew = line_width
         self._smooth = smooth
         self._light = light
 
@@ -536,6 +538,7 @@ class DisplayWidget(qgl.QGLWidget):
         gl.glClearColor(0,0,0,0)
         gl.glClearDepth(1.0)
         gl.glShadeModel(gl.GL_FLAT)
+        gl.glLineWidth(self._linew)
         if self._smooth != 0:
             gl.glEnable(gl.GL_MULTISAMPLE)
         if self._smooth == 1:
