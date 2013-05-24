@@ -5,7 +5,7 @@ import PyQt4.QtGui as g
 import OpenGL.GL as gl
 import OpenGL.GLU as glu
 import OpenGL.GLUT as glut
-import math
+import math, array
 import galaxy
 
 class ValueDisplayWidget(g.QWidget):
@@ -78,6 +78,7 @@ class DisplayWidget(qgl.QGLWidget):
                  scale,
                  step_count = 10,
                  interval = 20,
+                 trace_buffer = 1000,
                  plane_scale = None,
                  plane_color = [0.6,0.8,1.0],
                  cell_density = 10,
@@ -95,6 +96,8 @@ class DisplayWidget(qgl.QGLWidget):
 
         self._stepc = step_count
         self._interval = interval
+        self._trace_buffer = array.array("d")
+        self._trace_buffer_size = trace_buffer * 3
 
         if plane_scale == None:
             self._planes = scale
@@ -154,6 +157,7 @@ class DisplayWidget(qgl.QGLWidget):
         
         self._trace = -1
         self._trace_v = False
+        self._trace_line = False
 
         self._vDisplay = ValueDisplayWidget(self._galaxy, self._timer, self._trace,self)
         
@@ -248,19 +252,24 @@ class DisplayWidget(qgl.QGLWidget):
         self._updateCamera()
         
     def _rin(self):
+        if self._rho - 0.5 < 0:
+            return
         self._rho = self._rho - 0.5
         self._updateCamera()
-
         
     def _rout(self):
         self._rho = self._rho + 0.5
         self._updateCamera()
 
     def _moveupa(self):
+        if self._theta - 1 < 0:
+            return
         self._theta = self._theta - 1
         self._updateCamera()
 
     def _movedowna(self):
+        if self._theta + 1 > 180:
+            return
         self._theta = self._theta + 1
         self._updateCamera()
         
@@ -273,10 +282,14 @@ class DisplayWidget(qgl.QGLWidget):
         self._updateCamera()
             
     def _zoomin(self):
+        if self._view_angle - 2 < 0:
+            return
         self._view_angle = self._view_angle - 2
         self._updateCamera()
         
     def _zoomout(self):
+        if self._view_angle + 2 > 180:
+            return
         self._view_angle = self._view_angle + 2
         self._updateCamera()
         
@@ -334,7 +347,9 @@ class DisplayWidget(qgl.QGLWidget):
             return
         elif self._mouse_moving == 0:
             self._phi = - (event.x() - self._mouse_x) / 10.0 + self._phi
-            self._theta = - (event.y() - self._mouse_y) / 10.0 + self._theta
+            new_theta  = - (event.y() - self._mouse_y) / 10.0 + self._theta
+            if new_theta <=180 and new_theta >= 0:
+                self._theta = new_theta
             self._updateCamera()
         elif self._mouse_moving == 2:
             self._x = (event.x() - self._mouse_x) / 800.0 + self._x
@@ -353,6 +368,8 @@ class DisplayWidget(qgl.QGLWidget):
         
     def wheelEvent(self,event):
         step = event.delta() / 100.0
+        if self._view_angle - step < 0 or self._view_angle - step > 180:
+            return
         self._view_angle = self._view_angle - step
         self._updateCamera()
         event.accept()
