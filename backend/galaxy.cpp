@@ -100,10 +100,6 @@ void galaxy::setacc(int i)
     vector epi; // unit vector in direction of p[j]-p[i]
     vector dvi,dvj;
 
-    //if (celas[i].c) { //Collided with another cela. acceleration already calculated
-    //    return;
-    //}
-
     for (j=0;j<n;j++) { // cela[j]'s gravity on cela[i]
         if (j != i) { //Not myself
             r = celas[j].p - celas[i].p;
@@ -138,7 +134,7 @@ vector galaxy::getacc1(int i)
     vector acc(0,0,0);
     vector epi; // unit vector in direction of p[j]-p[i]
 
-    if (celas[i].c) { //Collided in this stepi
+    if (celas[i].c) { //Collided in this step
         return celas[i].a;
     }
 
