@@ -10,7 +10,7 @@ array[0] = sun
 for i in xrange(1,10):
     array[i] = galaxy.cela(i, galaxy.vector(40*i,0,0),
             galaxy.vector(0,math.sqrt(2500/i),i),1,1,"Earth"+str(i))
-    graphic.append({"radius":6,"color":[0.03*i+0.1,0.05*i+0.1,0.08*i+0.1]})
+    graphic.append({"radius":6,"color":[1-0.08*i,1-0.05*i+0.1,0]})
 array[10]=galaxy.cela(11, galaxy.vector(60,0,0),
         galaxy.vector(0,5,55),0.1,1,"Comet")
 graphic.append({"radius":4,"color":[0,0,1]})
