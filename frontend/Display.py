@@ -96,7 +96,6 @@ class DisplayWidget(qgl.QGLWidget):
 
         self._stepc = step_count
         self._interval = interval
-        self._trace_buffer = array.array("d")
         self._trace_buffer_size = trace_buffer * 3
 
         if plane_scale == None:
@@ -118,6 +117,10 @@ class DisplayWidget(qgl.QGLWidget):
         self._fs = False
         self._n = self._galaxy.getCelaNum()
 
+        self._trace_buffer = []
+        for i in xrange(self._n):
+            self._trace_buffer.append(array.array("d"))
+        
         self._fs_sc = g.QShortcut("f",self)
         self._fs_sc.activated.connect(self.toggleFullScreen)
 
@@ -185,7 +188,9 @@ class DisplayWidget(qgl.QGLWidget):
         
     def _clear_trace_buffer(self):
         del self._trace_buffer
-        self._trace_buffer = array.array("d")
+        self._trace_buffer = []
+        for i in xrange(self._n):
+            self._trace_buffer.append(array.array("d"))
 
     def _trace_line_handler(self):
         self._trace_line = not self._trace_line
@@ -479,21 +484,21 @@ class DisplayWidget(qgl.QGLWidget):
                 gl.glColor(1.0,1.0,1.0) 
                 glut.glutWireOctahedron()
             gl.glPopMatrix()
-            if i == self._trace and self._trace_line:
+            if self._trace_line and (self._trace == i or self._trace == - 1 ) :
                 if self._timer.isActive():
-                    self._trace_buffer.append(_array[i].p.x)
-                    self._trace_buffer.append(_array[i].p.y)
-                    self._trace_buffer.append(_array[i].p.z)
-                    if len(self._trace_buffer) > self._trace_buffer_size:
-                        self._trace_buffer.pop(0)
-                        self._trace_buffer.pop(0)
-                        self._trace_buffer.pop(0)
+                    self._trace_buffer[i].append(_array[i].p.x)
+                    self._trace_buffer[i].append(_array[i].p.y)
+                    self._trace_buffer[i].append(_array[i].p.z)
+                    if len(self._trace_buffer[i]) > self._trace_buffer_size:
+                        self._trace_buffer[i].pop(0)
+                        self._trace_buffer[i].pop(0)
+                        self._trace_buffer[i].pop(0)
                 gl.glColor(*self._axisc)
                 gl.glBegin(gl.GL_LINE_STRIP)
-                for i in xrange(len(self._trace_buffer) / 3):
-                    gl.glVertex(self._trace_buffer[i * 3],
-                                self._trace_buffer[i * 3+ 1],
-                                self._trace_buffer[i * 3+ 2])
+                for j in xrange(len(self._trace_buffer[i]) / 3):
+                    gl.glVertex(self._trace_buffer[i][j * 3],
+                                self._trace_buffer[i][j * 3+ 1],
+                                self._trace_buffer[i][j * 3+ 2])
                 gl.glEnd()
             
     def setTraceCela(self,celaN):
