@@ -84,6 +84,8 @@ class DisplayWidget(qgl.QGLWidget):
                  cell_density = 10,
                  axis_length = None,
                  axis_color = [1, 1 ,1],
+                 shadow_line = False,
+                 line_interval = 5,
                  parent = None):
         qgl.QGLWidget.__init__(self, parent)
         self.setWindowTitle("Display")
@@ -110,6 +112,8 @@ class DisplayWidget(qgl.QGLWidget):
         else:
             self._axisl = axis_length
         self._axisc = axis_color
+        self._shadow = shadow_line
+        self._line_int = line_interval
         
         self._timer = c.QTimer(self)
         self._timer.timeout.connect(self.run)
@@ -410,7 +414,7 @@ class DisplayWidget(qgl.QGLWidget):
             if self._trace_v:
                 self._phi, self._theta = self._get_angle_by_v(_array[self._trace].v)
             self.setCamera()
-        
+            
         gl.glColor(*self._planec)
         step = self._planes / float(self._celld)
         gl.glBegin(gl.GL_LINES)
@@ -493,12 +497,18 @@ class DisplayWidget(qgl.QGLWidget):
                         self._trace_buffer[i].pop(0)
                         self._trace_buffer[i].pop(0)
                         self._trace_buffer[i].pop(0)
-                gl.glColor(*self._axisc)
                 gl.glBegin(gl.GL_LINE_STRIP)
-                for j in xrange(len(self._trace_buffer[i]) / 3):
-                    gl.glVertex(self._trace_buffer[i][j * 3],
-                                self._trace_buffer[i][j * 3+ 1],
-                                self._trace_buffer[i][j * 3+ 2])
+                line_step = 3 * self._line_int
+                num = len(self._trace_buffer[i]) / line_step
+                for j in xrange(num):
+                    if self._shadow:
+                        color = [float(k) / num * j for k in self._axisc]
+                    else:
+                        color = [1.0, 1.0, 1.0]
+                    gl.glColor(*color)
+                    gl.glVertex(self._trace_buffer[i][j * line_step],
+                                self._trace_buffer[i][j * line_step+ 1],
+                                self._trace_buffer[i][j * line_step+ 2])
                 gl.glEnd()
             
     def setTraceCela(self,celaN):
