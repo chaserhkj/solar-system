@@ -88,6 +88,7 @@ class DisplayWidget(qgl.QGLWidget):
         
         self._galaxy = galaxy_obj
         self._graphic = graphic_obj
+        self._scale = scale
         self._scale_factor = float(1)/float(scale)
 
         self._stepc = step_count
@@ -395,6 +396,14 @@ class DisplayWidget(qgl.QGLWidget):
                            array[i].p.y,
                            array[i].p.z)
             drawfunc(graphic["radius"], 8, 8)
+            if i == self._trace:
+                gl.glColor(0.0,1.0,0.0)
+                
+                gl.glScale(graphic["radius"],graphic["radius"],graphic["radius"])
+                gl.glTranslate(0 ,0, 3)
+                glut.glutSolidOctahedron()
+                gl.glColor(1.0,1.0,1.0) 
+                glut.glutWireOctahedron()
             gl.glPopMatrix()
 
     def setTraceCela(self,celaN):
@@ -405,13 +414,18 @@ class DisplayWidget(qgl.QGLWidget):
 
     def initializeGL(self):
         glut.glutInit([])
+        gl.glEnable(gl.GL_DEPTH_TEST)
+        gl.glDepthMask(True)
+        gl.glDepthFunc(gl.GL_LEQUAL)
+        gl.glDepthRange(0.0,1.0)
         gl.glClearColor(0,0,0,0)
+        gl.glClearDepth(1.0)
         gl.glShadeModel(gl.GL_FLAT)
 
     def setCamera(self):
         gl.glMatrixMode(gl.GL_PROJECTION)
         gl.glLoadIdentity()
-        glu.gluPerspective(self._view_angle, self._aspect, 0, 100)
+        glu.gluPerspective(self._view_angle, self._aspect, 0.1, 100)
         gl.glMatrixMode(gl.GL_MODELVIEW)
         gl.glLoadIdentity()
         gl.glTranslate(self._x, self._y, 0)
