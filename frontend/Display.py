@@ -9,8 +9,8 @@ import math
 import galaxy
 
 class ValueDisplayWidget(g.QWidget):
-    def __init__(self, galaxy_obj, parent=None):
-        g.QWidget.__init__(self,parent, c.Qt.Window)
+    def __init__(self, galaxy_obj, timer, trace ,parent=None):
+        g.QWidget.__init__(self,parent)
 
         self._galaxy = galaxy_obj
         self._t = g.QLabel("")
@@ -35,10 +35,14 @@ class ValueDisplayWidget(g.QWidget):
         self._layout.addWidget(self._vy)
         self._layout.addWidget(self._vz)
 
-        self._trace = -1
+        timer.timeout.connect(self.updateValue)
+        
+        self._trace = trace
         self.setLayout(self._layout)
         self.updateValue()
 
+        self.setWindowTitle("Monitor")
+        
     def setTrace(self, trace):
         self._trace = trace
         
@@ -79,7 +83,7 @@ class DisplayWidget(qgl.QGLWidget):
                  cell_density = 10,
                  parent = None):
         qgl.QGLWidget.__init__(self, parent)
-        self.setWindowTitle("Demo")
+        self.setWindowTitle("Display")
         self.resize(500,500)
         
         self._galaxy = galaxy_obj
@@ -96,12 +100,8 @@ class DisplayWidget(qgl.QGLWidget):
             self._celld = cell_density
         self._planec = plane_color
         
-        self._vDisplay = ValueDisplayWidget(self._galaxy, self)
-        self._vDisplay.show()
-        
         self._timer = c.QTimer(self)
         self._timer.timeout.connect(self.run)
-        self._timer.timeout.connect(self._vDisplay.updateValue)
         
         self._fs = False
         self._n = self._galaxy.getCelaNum()
@@ -145,6 +145,8 @@ class DisplayWidget(qgl.QGLWidget):
         self._trace = -1
         self._trace_v = False
 
+        self._vDisplay = ValueDisplayWidget(self._galaxy, self._timer, self._trace,self)
+        
         self._mouse_moving = -1
         
         self._reset()
