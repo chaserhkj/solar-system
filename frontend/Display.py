@@ -124,11 +124,13 @@ class DisplayWidget(qgl.QGLWidget):
         self._smooth = smooth
         self._light = light
 
+        fmt = qgl.QGLFormat()
+
         if multisampling:
-            fmt = qgl.QGLFormat()
             fmt.setSampleBuffers(True)
-            self.setFormat(fmt)
-        
+
+        self.setFormat(fmt)
+            
         self._timer = c.QTimer(self)
         self._timer.timeout.connect(self.run)
         
