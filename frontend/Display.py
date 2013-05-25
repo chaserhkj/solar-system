@@ -87,9 +87,10 @@ class DisplayWidget(qgl.QGLWidget):
                  shadow_line = False,
                  line_interval = 5,
                  line_width = 1,
+                 light = False,
+                 default_style = "wired",
                  smooth = 0,
                  multisampling = False,
-                 light = False,
                  parent = None):
         qgl.QGLWidget.__init__(self, parent)
         self.setWindowTitle("Display")
@@ -123,7 +124,8 @@ class DisplayWidget(qgl.QGLWidget):
         self._multisample = multisampling
         self._smooth = smooth
         self._light = light
-
+        self._dstyle = default_style
+        
         fmt = qgl.QGLFormat()
 
         if multisampling:
@@ -485,7 +487,12 @@ class DisplayWidget(qgl.QGLWidget):
             else:
                 gl.glColor(*self._planec)
 
-            if "type" in graphic and graphic["type"] == "solid":
+            if not "type" in graphic:
+                style = self._dstyle
+            else:
+                style = graphic["style"]
+                
+            if style == "solid":
                 drawfunc = glut.glutSolidSphere
             else:
                 drawfunc = glut.glutWireSphere
@@ -494,7 +501,7 @@ class DisplayWidget(qgl.QGLWidget):
             gl.glTranslate(_array[i].p.x,
                            _array[i].p.y,
                            _array[i].p.z)
-            drawfunc(graphic["radius"], 8, 8)
+            drawfunc(graphic["radius"], 16, 16)
             if i == self._trace:
                 gl.glColor(0.0,1.0,0.0)
                 
@@ -541,12 +548,20 @@ class DisplayWidget(qgl.QGLWidget):
         gl.glDepthRange(0.0,1.0)
         gl.glClearColor(0,0,0,0)
         gl.glClearDepth(1.0)
-        gl.glShadeModel(gl.GL_FLAT)
-        gl.glLight(gl.GL_LIGHT0, gl.GL_SPECULAR, [1, 1, 1, 0])
-        gl.glEnable(gl.GL_LIGHTING)
-        gl.glEnable(gl.GL_LIGHT0)
-        gl.glEnable(gl.GL_COLOR_MATERIAL)
-        gl.glColorMaterial(gl.GL_FRONT_AND_BACK,gl.GL_AMBIENT)
+        gl.glShadeModel(gl.GL_SMOOTH)
+        if self._light:
+            gl.glLight(gl.GL_LIGHT0, gl.GL_AMBIENT, [0.9,0.9,0.9,1])
+            gl.glLight(gl.GL_LIGHT0, gl.GL_DIFFUSE, [1,1,1,1])
+            gl.glLight(gl.GL_LIGHT0, gl.GL_SPECULAR, [1,1,1,1])
+            gl.glLight(gl.GL_LIGHT0, gl.GL_POSITION, [1,1,0,0])
+            gl.glEnable(gl.GL_NORMALIZE)
+            gl.glEnable(gl.GL_LIGHTING)
+            gl.glEnable(gl.GL_LIGHT0)
+            gl.glEnable(gl.GL_COLOR_MATERIAL)
+            gl.glColorMaterial(gl.GL_FRONT_AND_BACK, gl.GL_AMBIENT_AND_DIFFUSE)
+            gl.glMaterial(gl.GL_FRONT_AND_BACK, gl.GL_SPECULAR, [1,1,1,1])
+            gl.glMaterial(gl.GL_FRONT_AND_BACK, gl.GL_EMISSION, [0,0,0,1])
+            gl.glMaterial(gl.GL_FRONT_AND_BACK, gl.GL_SHININESS, 10)
         gl.glLineWidth(self._linew)
         if self._multisample:
             gl.glEnable(gl.GL_MULTISAMPLE)
