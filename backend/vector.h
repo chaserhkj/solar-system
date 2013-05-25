@@ -24,6 +24,7 @@ public:
 
     bool operator== (const vector &v) const; //Comparison
     double mag() const; //magnitude
+    void clear(); // =(0,0,0)
     
 };
 

@@ -46,8 +46,9 @@ private:
 
     int num_threads; // Used for OpenMP
 
-    void setacc(int i); // Set accelration and collision flag for celas[i] based on p
-    vector getacc1(int i); // Get accelration for celas[i] based on p1
+    void setacc(); // Set accelration for celas[i] based on p 
+    void setcollision(); // Set collision flag 
+    void setacc1(); // Get accelration for celas[i] based on p1
 
     void calculateEnergy(); // Calculate system energy
 

@@ -135,60 +135,79 @@ cela* galaxy::output(){
     return celas;
 }
 
-void galaxy::setacc(int i)
+void galaxy::setacc()
 {
-    int j;
+    int i,j;
     vector r; //vector distance
-    double d,d0; //distance
-    vector acc(0,0,0);
+    double d; //distance
+    vector acc;
+
+#pragma omp parallel for private(r,d,acc,j)
+    for (i=0;i<n;i++) {
+        acc.clear(); 
+        for (j=0;j<n;j++) { // cela[j]'s gravity on cela[i]
+            if (j != i) { //Not myself
+                r = celas[j].p - celas[i].p;
+                d = max(r.mag(), celas[j].r + celas[i].r);
+                acc += G * celas[j].m * r / (r.mag() * d * d);
+            }
+        }
+        celas[i].a = acc;
+    }
+}
+
+void galaxy::setacc1()
+{
+    int i,j;
+    vector r; //vector distance
+    double d; //distance
+    vector acc;
+
+#pragma omp parallel for private(r,d,acc,j)
+    for (i=0;i<n;i++) {
+        acc.clear(); 
+        for (j=0;j<n;j++) { // cela[j]'s gravity on cela[i]
+            if (j != i) { //Not myself
+                r = celas[j].p1 - celas[i].p1;
+                d = max(r.mag(), celas[j].r + celas[i].r);
+                acc += G * celas[j].m * r / (r.mag() * d * d);
+            }
+        }
+        celas[i].a *= (1 - omega);
+        celas[i].a += omega * acc;
+    }
+}
+
+
+void galaxy::setcollision()
+{
+    int i,j;
+    vector r; //vector distance
+    double d; //distance
     vector epi; // unit vector in direction of p[j]-p[i]
     vector dvi,dvj;
 
-    for (j=0;j<n;j++) { // cela[j]'s gravity on cela[i]
-        if (j != i) { //Not myself
+    for (i=0;i<n;i++) {
+        if (celas[i].c) {
+            continue;
+        }
+        for (j=0;j<i;j++) {
             r = celas[j].p - celas[i].p;
             d = r.mag();
             epi = r / d;
-            d0 = max(d, celas[j].r + celas[i].r);
-            acc += G * celas[j].m * epi / (d0 * d0);
-            if (d <= (celas[i].r + celas[j].r)) {  
-                if (!celas[j].c && !celas[i].c) { //Collision with uncollided one
-                    celas[i].c = true;
-                    celas[j].c = true;
+            if ((d < (celas[i].r + celas[j].r)) && !celas[j].c) { //Collision with uncollided one
+                celas[i].c = true;
+                celas[j].c = true;
+                if (r * (celas[j].v - celas[i].v) > 0) {
                     dvj = 2 * celas[i].m / (celas[j].m + celas[i].m) * (celas[i].v - celas[j].v) * epi * epi;
                     dvi = 2 * celas[j].m / (celas[j].m + celas[i].m) * (celas[j].v - celas[i].v) * epi * epi;
                     celas[i].v += dvi;
                     celas[j].v += dvj;
                 }
+                break;
             }
         }
     }
-
-    celas[i].a = acc;
-    return;
-}
-
-
-vector galaxy::getacc1(int i)
-{
-    int j;
-    vector r; //vector distance
-    double d; //distance
-    vector acc(0,0,0);
-
-    if (celas[i].c) { //Collided in this step
-        return celas[i].a;
-    }
-
-    for (j=0;j<n;j++) { // cela[j]'s gravity on cela[i]
-        if (j != i) { //Not myself
-            r = celas[j].p1 - celas[i].p1;
-            d = max(r.mag(), celas[j].r + celas[i].r);
-            acc += G * celas[j].m * r / (r.mag() * d * d);
-        }
-    }
-
-    return acc;
 }
 
 void galaxy::calculateEnergy() 
@@ -227,22 +246,16 @@ void galaxy::run()
     for (i=0;i<n;i++) {
         celas[i].c = false;
     }
-
-//TODO#pragma omp parallel for
-    for (i=0;i<n;i++) {
-        setacc(i);
-    }
-
+    
+    setacc();
+    setcollision();
 
     for (rec=0;rec<recurdepth;rec++) { //Recursive calculation
 #pragma omp parallel for
         for (i=0;i<n;i++) {
             celas[i].newp1(dt);
         }
-#pragma omp parallel for
-        for (i=0;i<n;i++) {
-            celas[i].a = celas[i].a * (1 - omega) + getacc1(i) * omega;
-        }
+        setacc1();
     }
 
 #pragma omp parallel for
