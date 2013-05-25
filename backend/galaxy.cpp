@@ -23,7 +23,7 @@ galaxy::galaxy(int n, cela* stars, double step, double G, double t, int
         celas[i] = stars[i];
     }
 
-    if (numt == -1) { // Number of processors
+    if (numt == 0) { // Number of processors
         num_threads = omp_get_num_procs();
     } else {
         num_threads = numt;
@@ -32,6 +32,7 @@ galaxy::galaxy(int n, cela* stars, double step, double G, double t, int
 
     this->calculateEnergy();
     e0 = ek + ep;
+    e00 = e0;
 }
 
 galaxy::~galaxy()
@@ -49,11 +50,25 @@ void galaxy::setTimeStep(double step)
     dt = step;
 }
 
+void galaxy::fixenergyto0()
+{
+    int i;
+    this->calculateEnergy();
+    double co = sqrt((e00 - ep) / ek);
+    e0 = e00;
+#pragma omp parallel for
+    for (i=0;i<n;i++) {
+        celas[i].v *= co;
+    }
+}
+
 bool galaxy::togglefix()
 {
     if (applyenergyfix) {
         applyenergyfix = false;
     } else {
+        this->calculateEnergy();
+        e0 = ek + ep;
         applyenergyfix = true;
     }
 
@@ -62,7 +77,7 @@ bool galaxy::togglefix()
 
 void galaxy::setThreads(int numt)
 {
-    if (numt == -1) {
+    if (numt == 0) {
         num_threads = omp_get_num_procs();
     } else {
         num_threads = numt;
