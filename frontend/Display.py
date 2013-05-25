@@ -542,6 +542,11 @@ class DisplayWidget(qgl.QGLWidget):
         gl.glClearColor(0,0,0,0)
         gl.glClearDepth(1.0)
         gl.glShadeModel(gl.GL_FLAT)
+        gl.glLight(gl.GL_LIGHT0, gl.GL_SPECULAR, [1, 1, 1, 0])
+        gl.glEnable(gl.GL_LIGHTING)
+        gl.glEnable(gl.GL_LIGHT0)
+        gl.glEnable(gl.GL_COLOR_MATERIAL)
+        gl.glColorMaterial(gl.GL_FRONT_AND_BACK,gl.GL_AMBIENT)
         gl.glLineWidth(self._linew)
         if self._multisample:
             gl.glEnable(gl.GL_MULTISAMPLE)
