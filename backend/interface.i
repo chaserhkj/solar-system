@@ -46,6 +46,7 @@ public:
     void setGravity(double gc);
     void setTimeStep(double step);
     bool togglefix(); // Retrun status after toggle
+    void fixenergyto0(); // Fix system energy to initial status
     void setThreads(int numt=0); // Set number of threads;
 
     void run();

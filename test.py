@@ -4,7 +4,7 @@ import math
 from PyQt4.QtGui import QApplication
 
 array = galaxy.celaArray(20)
-graphic=[{"radius":14,"color":[1,0,0]}]
+graphic=[{"radius":14,"type":"solid","color":[1,0,0]}]
 sun = galaxy.cela(0, galaxy.vector(0,0,0), galaxy.vector(0,0,0),1000000,1,"Sun")
 array[0] = sun
 for i in xrange(1,10):

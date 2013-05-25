@@ -180,6 +180,9 @@ class DisplayWidget(qgl.QGLWidget):
         self._reset_sc = g.QShortcut("/", self, self._reset_view)
         
         self._pause_sc = g.QShortcut("Space", self, self.togglePaused)
+
+        self._togglefix_sc = g.QShortcut("p", self, self._galaxy.togglefix)
+        self._fixenergyto0_sc = g.QShortcut("o", self, self._galaxy.fixenergyto0)
         
         self._trace = -1
         self._trace_v = False
