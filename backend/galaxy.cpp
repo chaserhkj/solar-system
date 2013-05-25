@@ -2,6 +2,11 @@
 #include <omp.h>
 #include "galaxy.h"
 
+inline double max(double x1, double x2)
+{
+    return x1>x2?x1:x2;
+}
+
 void cela::newp1(double dt)
 {
     p1 = p + v * dt + a * dt * dt / 2;
@@ -16,19 +21,20 @@ void cela::flush(double dt)
 galaxy::galaxy(int n, cela* stars, double step, double G, double t, int
         r, double o, int numt, bool aplfx):n(n), dt(step), G(G), t(t), recurdepth(r), omega(o), applyenergyfix(aplfx)
 {
-    celas = new cela[n];
-    int i;
-#pragma omp parallel for
-    for (i=0;i<n;i++) {
-        celas[i] = stars[i];
-    }
-
     if (numt == 0) { // Number of processors
         num_threads = omp_get_num_procs();
     } else {
         num_threads = numt;
     }
     omp_set_num_threads(num_threads);
+    omp_set_nested(0); // Do not use nested parallel
+
+    celas = new cela[n];
+    int i;
+#pragma omp parallel for
+    for (i=0;i<n;i++) {
+        celas[i] = stars[i];
+    }
 
     this->calculateEnergy();
     e0 = ek + ep;
@@ -54,8 +60,8 @@ void galaxy::fixenergyto0()
 {
     int i;
     this->calculateEnergy();
-    double co = sqrt((e00 - ep) / ek);
     e0 = e00;
+    double co = sqrt((e0 - ep) / ek);
 #pragma omp parallel for
     for (i=0;i<n;i++) {
         celas[i].v *= co;
@@ -133,7 +139,7 @@ void galaxy::setacc(int i)
 {
     int j;
     vector r; //vector distance
-    double d; //distance
+    double d,d0; //distance
     vector acc(0,0,0);
     vector epi; // unit vector in direction of p[j]-p[i]
     vector dvi,dvj;
@@ -143,6 +149,8 @@ void galaxy::setacc(int i)
             r = celas[j].p - celas[i].p;
             d = r.mag();
             epi = r / d;
+            d0 = max(d, celas[j].r + celas[i].r);
+            acc += G * celas[j].m * epi / (d0 * d0);
             if (d <= (celas[i].r + celas[j].r)) {  
                 if (!celas[j].c && !celas[i].c) { //Collision with uncollided one
                     celas[i].c = true;
@@ -152,9 +160,6 @@ void galaxy::setacc(int i)
                     celas[i].v += dvi;
                     celas[j].v += dvj;
                 }
-                acc += G * celas[j].m * epi / ((celas[i].r + celas[j].r) * (celas[i].r + celas[j].r)); 
-            } else {
-                acc += G * celas[j].m * epi / (d * d);
             }
         }
     }
@@ -170,7 +175,6 @@ vector galaxy::getacc1(int i)
     vector r; //vector distance
     double d; //distance
     vector acc(0,0,0);
-    vector epi; // unit vector in direction of p[j]-p[i]
 
     if (celas[i].c) { //Collided in this step
         return celas[i].a;
@@ -179,13 +183,8 @@ vector galaxy::getacc1(int i)
     for (j=0;j<n;j++) { // cela[j]'s gravity on cela[i]
         if (j != i) { //Not myself
             r = celas[j].p1 - celas[i].p1;
-            d = r.mag();
-            epi = r / d;
-            if (d <= (celas[i].r + celas[j].r)) {  
-                acc += G * celas[j].m * epi / ((celas[i].r + celas[j].r) * (celas[i].r + celas[j].r)); 
-            } else {
-                acc += G * celas[j].m * epi / (d * d);
-            }
+            d = max(r.mag(), celas[j].r + celas[i].r);
+            acc += G * celas[j].m * r / (r.mag() * d * d);
         }
     }
 
@@ -195,14 +194,18 @@ vector galaxy::getacc1(int i)
 void galaxy::calculateEnergy() 
 {
     int i,j;
-    ek = 0;
     ep = 0;
+    double eki = 0;
+    double epi = 0;
+#pragma omp parallel for private(j) reduction(+:eki,epi)
     for (i=0;i<n;i++) {
-        ek += celas[i].m * (celas[i].v * celas[i].v) / 2;
+        eki += celas[i].m * (celas[i].v * celas[i].v) / 2;
         for (j=0;j<i;j++) {
-            ep -= G * celas[i].m * celas[j].m / (celas[j].p - celas[i].p).mag();
+            epi += -G * celas[i].m * celas[j].m / max((celas[j].p - celas[i].p).mag(), celas[j].r + celas[i].r);
         }
     }
+    ek = eki;
+    ep = epi;
 }
 
 double galaxy::getEnergy()
@@ -220,10 +223,12 @@ void galaxy::run()
     int i,rec;
     double co; // fix coefficient
 
+#pragma omp parallel for
     for (i=0;i<n;i++) {
         celas[i].c = false;
     }
 
+//TODO#pragma omp parallel for
     for (i=0;i<n;i++) {
         setacc(i);
     }
@@ -240,6 +245,7 @@ void galaxy::run()
         }
     }
 
+#pragma omp parallel for
     for (i=0;i<n;i++) { //Flush back
         celas[i].newp1(dt);
         celas[i].flush(dt);
