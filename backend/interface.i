@@ -39,7 +39,7 @@ class galaxy
 {
 public:
     galaxy(int n, cela* stars, double step=1, double G=1, double t=0, int r=0,
-            double o=0.5, int numt=-1 /*Default: = processors*/, bool
+            double o=0.5, int numt=0 /*Default: = processors*/, bool
             aplfx=false);
     ~galaxy(); 
 
