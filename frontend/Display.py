@@ -490,10 +490,10 @@ class DisplayWidget(qgl.QGLWidget):
             else:
                 gl.glColor(*self._planec)
 
-            if not "type" in graphic:
-                style = self._dstyle
-            else:
+            if "style" in graphic:
                 style = graphic["style"]
+            else:
+                style = self._dstyle
                 
             if style == "solid":
                 drawfunc = glut.glutSolidSphere

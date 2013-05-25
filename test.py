@@ -4,7 +4,7 @@ import math
 from PyQt4.QtGui import QApplication
 
 array = galaxy.celaArray(20)
-graphic=[{"radius":14,"type":"solid","color":[1,0,0]}]
+graphic=[{"radius":14,"style":"solid","color":[1,0,0]}]
 sun = galaxy.cela(0, galaxy.vector(0,0,0), galaxy.vector(0,0,0),1000000,1,"Sun")
 array[0] = sun
 for i in xrange(1,10):
@@ -17,7 +17,7 @@ graphic.append({"radius":4,"color":[0,0,1]})
 g = galaxy.galaxy(11, array, step=0.01, G=0.1, t=0, r=69, o=0.01, aplfx=False)
 
 app = QApplication([])
-d = Display.DisplayWidget(g,graphic ,scale=400,line_width = 1,multisampling = True,smooth = 2,plane_scale =
+d = Display.DisplayWidget(g,graphic ,scale=400,light = True,line_width = 1,multisampling = True,smooth = 0,plane_scale =
         600,cell_density=20,interval=20,shadow_line = False,  line_interval=5)
 d.show()
 #d.start()
