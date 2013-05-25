@@ -43,18 +43,23 @@ private:
     double omega; // Recursive coefficient [0,1]
     bool applyenergyfix;
 
+    int num_threads; // Used for OpenMP
+
     void setacc(int i); // Set accelration and collision flag for celas[i] based on p
     vector getacc1(int i); // Get accelration for celas[i] based on p1
 
     void calculateEnergy(); // Calculate system energy
 
 public:
-    galaxy(int n, cela* stars, double step=1, double G=1, double t=0, int r=0, double o=0.5, bool aplfx=false);
+    galaxy(int n, cela* stars, double step=1, double G=1, double t=0, int r=0,
+            double o=0.5, int numt=-1 /*Default: = processors*/, bool
+            aplfx=false);
     ~galaxy(); 
 
     void setGravity(double gc);
     void setTimeStep(double step);
     bool togglefix(); // Retrun status after toggle
+    void setThreads(int numt=-1); // Set number of threads;
 
     void run();
 
@@ -65,6 +70,7 @@ public:
     double getOmega();
     double getG();
     double getStep();
+    int getThreads(); // Get number of threads;
     bool appliedfix(); // True if applied energy fix
 
     cela* output();

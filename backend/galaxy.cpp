@@ -14,13 +14,21 @@ void cela::flush(double dt)
 }
 
 galaxy::galaxy(int n, cela* stars, double step, double G, double t, int
-        r, double o, bool aplfx):n(n), dt(step), G(G), t(t), recurdepth(r), omega(o), applyenergyfix(aplfx)
+        r, double o, int numt, bool aplfx):n(n), dt(step), G(G), t(t), recurdepth(r), omega(o), applyenergyfix(aplfx)
 {
     celas = new cela[n];
     int i;
+#pragma omp parallel for
     for (i=0;i<n;i++) {
         celas[i] = stars[i];
     }
+
+    if (numt == -1) { // Number of processors
+        num_threads = omp_get_num_procs();
+    } else {
+        num_threads = numt;
+    }
+    omp_set_num_threads(num_threads);
 
     this->calculateEnergy();
     e0 = ek + ep;
@@ -50,6 +58,16 @@ bool galaxy::togglefix()
     }
 
     return applyenergyfix;
+}
+
+void galaxy::setThreads(int numt)
+{
+    if (numt == -1) {
+        num_threads = omp_get_num_procs();
+    } else {
+        num_threads = numt;
+    }
+    omp_set_num_threads(num_threads);
 }
 
 int galaxy::getCelaNum()
@@ -82,6 +100,11 @@ double galaxy::getStep()
     return dt;
 }
 
+int galaxy::getThreads()
+{
+    return num_threads;
+}
+
 bool galaxy::appliedfix()
 {
     return applyenergyfix;
@@ -107,12 +130,12 @@ void galaxy::setacc(int i)
             epi = r / d;
             if (d <= (celas[i].r + celas[j].r)) {  
                 if (!celas[j].c && !celas[i].c) { //Collision with uncollided one
-                celas[i].c = true;
-                celas[j].c = true;
-                dvj = 2 * celas[i].m / (celas[j].m + celas[i].m) * (celas[i].v - celas[j].v) * epi * epi;
-                dvi = 2 * celas[j].m / (celas[j].m + celas[i].m) * (celas[j].v - celas[i].v) * epi * epi;
-                celas[i].v += dvi;
-                celas[j].v += dvj;
+                    celas[i].c = true;
+                    celas[j].c = true;
+                    dvj = 2 * celas[i].m / (celas[j].m + celas[i].m) * (celas[i].v - celas[j].v) * epi * epi;
+                    dvi = 2 * celas[j].m / (celas[j].m + celas[i].m) * (celas[j].v - celas[i].v) * epi * epi;
+                    celas[i].v += dvi;
+                    celas[j].v += dvj;
                 }
                 acc += G * celas[j].m * epi / ((celas[i].r + celas[j].r) * (celas[i].r + celas[j].r)); 
             } else {
@@ -192,9 +215,11 @@ void galaxy::run()
 
 
     for (rec=0;rec<recurdepth;rec++) { //Recursive calculation
+#pragma omp parallel for
         for (i=0;i<n;i++) {
             celas[i].newp1(dt);
         }
+#pragma omp parallel for
         for (i=0;i<n;i++) {
             celas[i].a = celas[i].a * (1 - omega) + getacc1(i) * omega;
         }
@@ -208,6 +233,7 @@ void galaxy::run()
     if (applyenergyfix) {  // Fix system energy
         this->calculateEnergy();
         co = sqrt((e0 - ep) / ek);
+#pragma omp parallel for
         for (i=0;i<n;i++) {
             celas[i].v *= co;
         }
