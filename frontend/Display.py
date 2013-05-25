@@ -88,6 +88,7 @@ class DisplayWidget(qgl.QGLWidget):
                  line_interval = 5,
                  line_width = 1,
                  smooth = 0,
+                 multisampling = False,
                  light = False,
                  parent = None):
         qgl.QGLWidget.__init__(self, parent)
@@ -119,10 +120,11 @@ class DisplayWidget(qgl.QGLWidget):
         self._line_int = line_interval
 
         self._linew = line_width
+        self._multisample = multisampling
         self._smooth = smooth
         self._light = light
 
-        if smooth != 0:
+        if multisampling:
             fmt = qgl.QGLFormat()
             fmt.setSampleBuffers(True)
             self.setFormat(fmt)
@@ -539,7 +541,7 @@ class DisplayWidget(qgl.QGLWidget):
         gl.glClearDepth(1.0)
         gl.glShadeModel(gl.GL_FLAT)
         gl.glLineWidth(self._linew)
-        if self._smooth != 0:
+        if self._multisample:
             gl.glEnable(gl.GL_MULTISAMPLE)
         if self._smooth == 1:
             gl.glEnable(gl.GL_POINT_SMOOTH)
