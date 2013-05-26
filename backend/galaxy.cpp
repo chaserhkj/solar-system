@@ -56,16 +56,22 @@ void galaxy::setTimeStep(double step)
     dt = step;
 }
 
-void galaxy::fixenergyto0()
+bool galaxy::fixenergyto0()
 {
     int i;
     this->calculateEnergy();
     e0 = e00;
-    double co = sqrt((e0 - ep) / ek);
+    double co = (e0 - ep) / ek;
+    if (co < 0) {
+        return false;
+    }
+    co = sqrt(co);
 #pragma omp parallel for
     for (i=0;i<n;i++) {
         celas[i].v *= co;
     }
+
+    return true;
 }
 
 bool galaxy::togglefix()
