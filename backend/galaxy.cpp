@@ -188,9 +188,6 @@ void galaxy::setcollision()
     vector dvi,dvj;
 
     for (i=0;i<n;i++) {
-        if (celas[i].c) {
-            continue;
-        }
         for (j=0;j<i;j++) {
             r = celas[j].p - celas[i].p;
             d = r.mag();
@@ -198,7 +195,7 @@ void galaxy::setcollision()
             if ((d < (celas[i].r + celas[j].r)) && !celas[j].c) { //Collision with uncollided one
                 celas[i].c = true;
                 celas[j].c = true;
-                if (r * (celas[j].v - celas[i].v) > 0) {
+                if (r * (celas[j].v - celas[i].v) < 0) {
                     dvj = 2 * celas[i].m / (celas[j].m + celas[i].m) * (celas[i].v - celas[j].v) * epi * epi;
                     dvi = 2 * celas[j].m / (celas[j].m + celas[i].m) * (celas[j].v - celas[i].v) * epi * epi;
                     celas[i].v += dvi;
