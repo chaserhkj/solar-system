@@ -33,25 +33,25 @@ planets.append({"name":"Sun","position":[0,0,0],"velocity":[0,0,0],"mass":100000
 Mercurystyle={"radius":3.8,"color":[1,1,1]}
 planets.append({"name":"Mercury","position":[390,0,0],"velocity":[0,20,0],"mass":0.0553,"radius":3.8,"graphic":Mercurystyle})
 
-Venusstyle={"radius":9.49,"color":[1,1,1]}
+Venusstyle={"radius":9.49,"color":[0.93,0.93,0]}
 planets.append({"name":"Venus","position":[720,0,0],"velocity":[0,20,0],"mass":0.815,"radius":9.49,"graphic":Venusstyle})
 
 Earthstyle={"radius":10,"color":[0.6,0.8,1]}
 planets.append({"name":"Earth","position":[1000,0,0],"velocity":[0,20,0],"mass":1,"radius":10,"graphic":Earthstyle})
 
-Marsstyle={"radius":5.32,"color":[0,1,1]}
+Marsstyle={"radius":5.32,"color":[0.93,0.25,0]}
 planets.append({"name":"Mars","position":[1520,0,0],"velocity":[0,20,0],"mass":0.1074,"radius":5.32,"graphic":Marsstyle})
 
-Jupiterstyle={"radius":112,"color":[0,1,1]}
+Jupiterstyle={"radius":112,"color":[0.80,0.506,0.384]}
 planets.append({"name":"Jupiter","position":[5200,0,0],"velocity":[0,20,0],"mass":317.834,"radius":112,"graphic":Jupiterstyle})
 
-Saturnstyle={"radius":94.1,"color":[0,1,1]}
+Saturnstyle={"radius":94.1,"color":[0.80,0.729,0.588]}
 planets.append({"name":"Saturn","position":[9540,0,0],"velocity":[0,20,0],"mass":95.159,"radius":94.1,"graphic":Saturnstyle})
 
-Uranusstyle={"radius":40.6,"color":[0,1,1]}
+Uranusstyle={"radius":40.6,"color":[0.60,0.753,0.80]}
 planets.append({"name":"Uranus","position":[19200,0,0],"velocity":[0,20,0],"mass":14.5,"radius":40.6,"graphic":Uranusstyle})
 
-Neptunestyle={"radius":38.8,"color":[0,1,1]}
+Neptunestyle={"radius":38.8,"color":[0.68,0.93,0.93]}
 planets.append({"name":"Neptune","position":[30100,0,0],"velocity":[0,20,0],"mass":17.2,"radius":38.8,"graphic":Neptunestyle})
 
 solar={"global":globalvariables,"celas":planets}
