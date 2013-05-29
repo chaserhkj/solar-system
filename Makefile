@@ -16,7 +16,7 @@ BACKEND_OBJS := vector.o galaxy.o
 INTERFACE_H := vector.h galaxy.h
 
 BACKEND_DIST := galaxy.py _galaxy.so
-FRONTEND_DIST := IO.py Editor.py Display.py
+FRONTEND_DIST := IO.py Editor.py Display.py Launcher.py
 
 vpath %.cpp backend
 vpath %.h backend

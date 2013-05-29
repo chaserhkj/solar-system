@@ -11,11 +11,14 @@ if not _no_runtime:
         def __init__(self):
             self.celas = None
             self.graphic = None
+            self.global_settings = None
             self.N = 0
 
         def load(self, filename):
             with file(filename, "r") as f:
-                data=json.load(f)
+                data = json.load(f)
+                self.global_settings = data["global"]
+                data = data["celas"]
 
             self.N = len(data)    
             self.celas = galaxy.celaArray(self.N)
@@ -50,7 +53,7 @@ if not _no_runtime:
                 data_list.append(data)
 
             with file(filename, "w") as f:
-                json.dump(data_list, f, indent=2)
+                json.dump({"global":self.global_settings, "celas":data_list}, f, indent=2)
                 
 class EdittimeIO(object):
     def __init__(self):
