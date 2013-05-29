@@ -46,8 +46,9 @@ private:
 
     int num_threads; // Used for OpenMP
 
-    void setacc(int i); // Set accelration and collision flag for celas[i] based on p
-    vector getacc1(int i); // Get accelration for celas[i] based on p1
+    void setacc(); // Set accelration for celas[i] based on p 
+    void setcollision(); // Set collision flag 
+    void setacc1(); // Get accelration for celas[i] based on p1
 
     void calculateEnergy(); // Calculate system energy
 
@@ -60,7 +61,7 @@ public:
     void setGravity(double gc);
     void setTimeStep(double step);
     bool togglefix(); // Retrun status after toggle
-    void fixenergyto0(); // Fix system energy to initial status
+    bool fixenergyto0(); // Fix system energy to initial status
     void setThreads(int numt=0); // Set number of threads;
 
     void run();

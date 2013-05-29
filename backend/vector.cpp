@@ -63,6 +63,13 @@ double vector::mag() const
     return sqrt(x*x+y*y+z*z);
 }
 
+void vector::clear()
+{
+    x=0;
+    y=0;
+    z=0;
+}
+
 vector operator* (double s, const vector &v)
 {
     return vector(v.x*s, v.y*s, v.z*s);
