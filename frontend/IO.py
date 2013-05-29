@@ -32,9 +32,8 @@ if not _no_runtime:
                                   data[i]["velocity"][2])
                 self.celas[i] = galaxy.cela(i, p, v,
                                             data[i]["mass"],
-                                            data[i]["radius"])
-#                                           data[i]["name"])
-                print data[i]["name"]
+                                            data[i]["radius"],
+                                            str(data[i]["name"]))
                 self.graphic.append(data[i]["graphic"])
 
         def save(self, filename):
