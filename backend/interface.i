@@ -42,13 +42,12 @@ class galaxy
 {
 public:
     galaxy(int n, cela* stars, double step=1, double G=1, double t=0, int r=0,
-            double o=0.5, int numt=0 /*Default: = processors*/, bool
-            aplfx=false);
+            double o=0.5, int numt=0 /*Default: = processors*/, int fix=0);
     ~galaxy(); 
 
     void setGravity(double gc);
     void setTimeStep(double step);
-    bool togglefix(); // Retrun status after toggle
+    void setFix(int f); // Set fix method
     bool fixenergyto0(); // Fix system energy to initial status
     void setThreads(int numt=0); // Set number of threads;
 
@@ -62,7 +61,7 @@ public:
     double getG();
     double getStep();
     int getThreads(); // Get number of threads;
-    bool appliedfix(); // True if applied energy fix
+    int getFixMethod(); // True if applied energy fix
 
     cela* output();
 };

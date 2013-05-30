@@ -22,7 +22,7 @@ void cela::flush(double dt)
 }
 
 galaxy::galaxy(int n, cela* stars, double step, double G, double t, int
-        r, double o, int numt, bool aplfx):n(n), dt(step), G(G), t(t), recurdepth(r), omega(o), applyenergyfix(aplfx)
+        r, double o, int numt, int fix):n(n), dt(step), G(G), t(t), recurdepth(r), omega(o), fix(fix)
 {
     if (numt == 0) { // Number of processors
         num_threads = omp_get_num_procs();
@@ -31,6 +31,9 @@ galaxy::galaxy(int n, cela* stars, double step, double G, double t, int
     }
     omp_set_num_threads(num_threads);
     omp_set_nested(0); // Do not use nested parallel
+
+    r2= recurdepth;
+    r1 = r2 - 1;
 
     celas = new cela[n];
     int i;
@@ -78,17 +81,11 @@ bool galaxy::fixenergyto0()
     return true;
 }
 
-bool galaxy::togglefix()
+void galaxy::setFix(int f)
 {
-    if (applyenergyfix) {
-        applyenergyfix = false;
-    } else {
-        this->calculateEnergy();
-        e0 = ek + ep;
-        applyenergyfix = true;
-    }
-
-    return applyenergyfix;
+    this->calculateEnergy();
+    e0 = ek + ep;
+    fix = f;
 }
 
 void galaxy::setThreads(int numt)
@@ -136,9 +133,9 @@ int galaxy::getThreads()
     return num_threads;
 }
 
-bool galaxy::appliedfix()
+int galaxy::getFixMethod()
 {
-    return applyenergyfix;
+    return fix;
 }
 
 cela* galaxy::output(){
@@ -238,7 +235,7 @@ void galaxy::calculateEnergy()
 
 double galaxy::getEnergy()
 {
-    if (applyenergyfix) {
+    if (fix==1) { //energy fix
         return e0;
     }
 
@@ -273,12 +270,20 @@ void galaxy::run()
         celas[i].flush(dt);
     }
 
-    if (applyenergyfix) {  // Fix system energy
+    if (fix==1) {  // energy fix
         this->calculateEnergy();
         co = sqrt((e0 - ep) / ek);
 #pragma omp parallel for
         for (i=0;i<n;i++) {
             celas[i].v *= co;
+        }
+    }
+
+    if (fix==2) { // wave fix
+        if (this->getEnergy() < e0) {
+            recurdepth = r1;
+        } else {
+            recurdepth = r2;
         }
     }
 
