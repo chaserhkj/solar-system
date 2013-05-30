@@ -34,6 +34,7 @@ galaxy::galaxy(int n, cela* stars, double step, double G, double t, int
 #pragma omp parallel for
     for (i=0;i<n;i++) {
         celas[i] = stars[i];
+        celas[i].id = i;
     }
 
     this->calculateEnergy();
