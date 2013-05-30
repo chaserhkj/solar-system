@@ -183,6 +183,9 @@ class DisplayWidget(qgl.QGLWidget):
 
         self._togglefix_sc = g.QShortcut("p", self, self._galaxy.togglefix)
         self._fixenergyto0_sc = g.QShortcut("o", self, self._galaxy.fixenergyto0)
+
+        self._speedup_sc = g.QShortcut(".", self, self._speedup)
+        self._speeddown_sc = g.QShortcut(",", self, self._speeddown)
         
         self._trace = -1
         self._trace_v = False
@@ -220,6 +223,14 @@ class DisplayWidget(qgl.QGLWidget):
 
     def getTime(self):
         return self._galaxy.getTime()
+
+    def _speedup(self):
+        self._stepc = self._stepc + 1
+        
+    def _speeddown(self):
+        if self._stepc - 1 > 0:
+            self._stepc = self._stepc - 1
+        
         
     def _reset_view(self):
         self._reset()
