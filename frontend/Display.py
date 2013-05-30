@@ -295,13 +295,19 @@ class DisplayWidget(qgl.QGLWidget):
         self._updateCamera()
         
     def _rin(self):
-        if self._rho - 0.5 < 0:
+        step = 0.5
+        if self._rho <= 1:
+            step = self._rho / 10.0
+        if self._rho - step < 1e-2:
             return
-        self._rho = self._rho - 0.5
+        self._rho = self._rho - step
         self._updateCamera()
         
     def _rout(self):
-        self._rho = self._rho + 0.5
+        step = 0.5
+        if self._rho <= 1:
+            step = self._rho / 10.0
+        self._rho = self._rho + step
         self._updateCamera()
 
     def _moveupa(self):
@@ -325,15 +331,21 @@ class DisplayWidget(qgl.QGLWidget):
         self._updateCamera()
             
     def _zoomin(self):
-        if self._view_angle - 2 < 0:
+        step = 1
+        if self._view_angle <= 10:
+            step = self._view_angle / 20.0
+        if self._view_angle - step < 0:
             return
-        self._view_angle = self._view_angle - 2
+        self._view_angle = self._view_angle - step
         self._updateCamera()
         
     def _zoomout(self):
-        if self._view_angle + 2 > 180:
+        step = 1
+        if self._view_angle <= 10:
+            step = self._view_angle / 10.0
+        if self._view_angle + step > 180:
             return
-        self._view_angle = self._view_angle + 2
+        self._view_angle = self._view_angle + step
         self._updateCamera()
         
     def run(self):
@@ -411,6 +423,8 @@ class DisplayWidget(qgl.QGLWidget):
         
     def wheelEvent(self,event):
         step = event.delta() / 100.0
+        if self._view_angle <= 10 and not event.modifiers() == c.Qt.ControlModifier:
+            step = step > 0 and self._view_angle / 20.0 or -self._view_angle / 10.0
         if self._view_angle - step < 0 or self._view_angle - step > 180:
             return
         self._view_angle = self._view_angle - step
@@ -586,7 +600,7 @@ class DisplayWidget(qgl.QGLWidget):
     def setCamera(self):
         gl.glMatrixMode(gl.GL_PROJECTION)
         gl.glLoadIdentity()
-        glu.gluPerspective(self._view_angle, self._aspect, 0.1, 100)
+        glu.gluPerspective(self._view_angle, self._aspect, 1e-2, 100)
         gl.glMatrixMode(gl.GL_MODELVIEW)
         gl.glLoadIdentity()
         gl.glTranslate(self._x, self._y, 0)
