@@ -102,6 +102,7 @@ class DisplayWidget(qgl.QGLWidget):
         self._scale_factor = float(1)/float(scale)
 
         self._stepc = step_count
+        self._stepcd = step_count
         self._interval = interval
         self._trace_buffer_size = trace_buffer * 3
 
@@ -186,6 +187,7 @@ class DisplayWidget(qgl.QGLWidget):
 
         self._speedup_sc = g.QShortcut(".", self, self._speedup)
         self._speeddown_sc = g.QShortcut(",", self, self._speeddown)
+        self._speedreset_sc = g.QShortcut(";", self, self._speedreset)
         
         self._trace = -1
         self._trace_v = False
@@ -230,7 +232,10 @@ class DisplayWidget(qgl.QGLWidget):
     def _speeddown(self):
         if self._stepc - 1 > 0:
             self._stepc = self._stepc - 1
-        
+
+    def _speedreset(self):
+        self._stepc = self._stepcd        
+            
         
     def _reset_view(self):
         self._reset()
