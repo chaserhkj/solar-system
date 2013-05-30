@@ -192,7 +192,7 @@ class DisplayWidget(qgl.QGLWidget):
         self._trace_line = False
 
         self._vDisplay = ValueDisplayWidget(self._galaxy, self._timer, self._trace,self)
-        self._vDisplay.setGeometry(0,0,165,190)
+        self._vDisplay.setGeometry(0,0,200,200)
         
         self._mouse_moving = -1
         

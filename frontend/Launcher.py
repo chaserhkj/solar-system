@@ -44,7 +44,7 @@ if __name__ == '__main__':
         multisampling = io.global_settings["Enable multi-sampling"]
     )
     saveB = g.QPushButton("Save current state to file",display)
-    saveB.setGeometry(0,190,165,25)
+    saveB.setGeometry(0,200,200,30)
     def save():
         display.stop()
         save_io = IO.RuntimeIO()
