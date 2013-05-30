@@ -43,6 +43,20 @@ if __name__ == '__main__':
         smooth = io.global_settings["Enable smooth"],
         multisampling = io.global_settings["Enable multi-sampling"]
     )
+    saveB = g.QPushButton("Save current state to file",display)
+    saveB.setGeometry(0,190,165,25)
+    def save():
+        display.stop()
+        save_io = IO.RuntimeIO()
+        save_io.celas = display.getCelas()
+        save_io.graphic = io.graphic
+        io.global_settings["Initial time"] = display.getTime()
+        save_io.global_settings = io.global_settings
+        save_io.N = display.getCelaNum()
+        filename = g.QFileDialog.getSaveFileName()
+        if filename:
+            save_io.save(filename)
+    saveB.clicked.connect(save)
     display.show()
     if io.global_settings["Start system at startup"]:
         display.start()

@@ -189,6 +189,7 @@ class DisplayWidget(qgl.QGLWidget):
         self._trace_line = False
 
         self._vDisplay = ValueDisplayWidget(self._galaxy, self._timer, self._trace,self)
+        self._vDisplay.setGeometry(0,0,165,190)
         
         self._mouse_moving = -1
         
@@ -207,6 +208,19 @@ class DisplayWidget(qgl.QGLWidget):
         self._theta = 45
         self._phi = 45
 
+    def getCelas(self):
+        output = []
+        array = galaxy.celaArray_frompointer(self._galaxy.output())
+        for i in xrange(self._n):
+            output.append(array[i])
+        return output
+
+    def getCelaNum(self):
+        return self._n
+
+    def getTime(self):
+        return self._galaxy.getTime()
+        
     def _reset_view(self):
         self._reset()
         self._updateCamera()
