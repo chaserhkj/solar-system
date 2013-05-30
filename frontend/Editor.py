@@ -18,6 +18,29 @@ class Editor(g.QWidget):
     def updateDisplayedData(self):
         pass
         
+    def setDefaults(self):
+        self._step.setText("0.010")
+        self._g.setText("1.0")
+        self._t.setText("0")
+        self._r.setText("0")
+        self._o.setText("0")
+        self._numt.setText("0")
+        self._aplfx.setChecked(False)
+        self._scale.setText("10000")
+        self._step_count.setText("10")
+        self._interval.setText("20")
+        self._plane_scale.setText("12000")
+        self._cell_density.setText("20")
+        self._plane_color = g.QColor(255,255,255)
+        self._trace_buffer_size.setText("1000")
+        self._axis_length.setText("20")
+        self._axis_color = g.QColor(255,255,255)
+        self._line_width.setText("1")
+        self._line_drawing_interval.setText("5")
+        self._show_shadow_line.setChecked(False)
+        self._enable_lighting.setChecked(True)
+        self._enable_multi_sampling.setChecked(True)
+
     def __init__(self,parent=None):
         g.QWidget.__init__(self, parent)
 
@@ -195,7 +218,7 @@ class Editor(g.QWidget):
         self.setWindowTitle("Cela System Editor")
         self.setLayout(self._layout)
         self.resize(600,600)
-
+        self.setDefaults()
 b=g.QApplication([])
 a=Editor()
 a.show()
