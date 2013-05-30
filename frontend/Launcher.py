@@ -7,6 +7,9 @@ import IO
 
 if __name__ == '__main__':
     app = g.QApplication(sys.argv)
+    font = g.QFont()
+    font.setPointSize(10)
+    app.setFont(font)
     io = IO.RuntimeIO()
     filename = g.QFileDialog.getOpenFileName()
     if not filename:
