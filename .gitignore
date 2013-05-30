@@ -1,4 +1,7 @@
 dist
+*.aux
+*.log
+*.pdf
 *~
 *.o
 _galaxy.so
