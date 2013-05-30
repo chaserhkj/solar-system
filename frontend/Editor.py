@@ -90,16 +90,57 @@ class Editor(g.QWidget):
         layout.addWidget(button)
         self._layout.addLayout(layout)
         
+        layout = g.QHBoxLayout()
+        layout.addWidget(g.QLabel("Trace buffer size"))
+        self._trace_buffer_size = g.QLineEdit()
+        layout.addWidget(self._trace_buffer_size)
+        layout.addWidget(g.QLabel("Axis length"))
+        self._axis_length = g.QLineEdit()
+        layout.addWidget(self._axis_length)
+        button = g.QPushButton("Set Axis color")
+        self._axis_color = g.QColor(255,255,255)
+        def setAxisColor():
+            self._axis_color = g.QColorDialog\
+                                 .getColor(self._axis_color)
+        button.clicked.connect(setAxisColor)
+        layout.addWidget(button)
+        self._layout.addLayout(layout)
+
+        layout = g.QHBoxLayout()
+        layout.addWidget(g.QLabel("Line width"))
+        self._line_width = g.QLineEdit()
+        layout.addWidget(self._line_width)
+        layout.addWidget(g.QLabel("Line drawing interval"))
+        self._line_drawing_interval = g.QLineEdit()
+        layout.addWidget(self._line_drawing_interval)
+        self._show_shadow_line = g.QCheckBox("Show shadow line")
+        layout.addWidget(self._show_shadow_line)
+        self._layout.addLayout(layout)
+
+        layout = g.QHBoxLayout()
+        self._layout.addLayout(layout)
+
         self._listWidget = g.QListWidget()
+        self._enable_lighting = g.QCheckBox("Lighting")
+        layout.addWidget(self._enable_lighting)
+        self._enable_multi_sampling = g.QCheckBox("Multi-sampling")
+        layout.addWidget(self._enable_multi_sampling)
+        layout.addWidget(g.QLabel("Smooth"))
+        #TODO
+        layout.addWidget(g.QLabel("Default sphere style"))
+        #TODO
         self._layout.addWidget(self._listWidget)
 
-        self._name = g.QLineEdit()
         layout = g.QHBoxLayout()
         layout.addWidget(g.QLabel("Name (optional)"))
+        self._name = g.QLineEdit()
         layout.addWidget(self._name)
-        self._mass = g.QLineEdit()
         layout.addWidget(g.QLabel("Mass"))
+        self._mass = g.QLineEdit()
         layout.addWidget(self._mass)
+        layout.addWidget(g.QLabel("Radius"))
+        self._radius = g.QLineEdit()
+        layout.addWidget(self._radius)
         self._layout.addLayout(layout)
         
         self._px = g.QLineEdit()
@@ -127,6 +168,22 @@ class Editor(g.QWidget):
         self._layout.addLayout(layout)
         
         layout = g.QHBoxLayout()
+        layout.addWidget(g.QLabel("Graphical settings:"))
+        layout.addWidget(g.QLabel("Radius"))
+        self._graphic_radius = g.QLineEdit()
+        layout.addWidget(self._graphic_radius)
+        layout.addWidget(g.QLabel("Style"))
+        #TODO
+        button = g.QPushButton("Set graphic color")
+        self._graphic_color = g.QColor(255,255,255)
+        def setGraphicColor():
+            self._graphic_color = g.QColorDialog\
+                                 .getColor(self._graphic_color)
+        button.clicked.connect(setGraphicColor)
+        layout.addWidget(button)
+        self._layout.addLayout(layout)
+
+        layout = g.QHBoxLayout()
         updateB = g.QPushButton("Update")
         addB = g.QPushButton("Add")
         delB = g.QPushButton("Delete")
@@ -138,5 +195,8 @@ class Editor(g.QWidget):
         self.setWindowTitle("Cela System Editor")
         self.setLayout(self._layout)
         self.resize(600,600)
+
+b=g.QApplication([])
 a=Editor()
-a.show()        
+a.show()
+b.exec_()
