@@ -57,13 +57,13 @@ if not _no_runtime:
                 
 class EdittimeIO(object):
     def __init__(self):
-        self.celas = []
+        self.data = {"celas":[],"global":{}}
 
     def load(self, filename):
         with file(filename, "r") as f:
-            self.celas=json.load(f)
+            self.data=json.load(f)
             
     def save(self, filename):
         with file(filename, "w") as f:
-            json.dump(self.celas, f, indent=2)
+            json.dump(self.data, f, indent=2)
             

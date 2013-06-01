@@ -61,6 +61,4 @@ if __name__ == '__main__':
             save_io.save(filename)
     saveB.clicked.connect(save)
     display.show()
-    if io.global_settings["Start system at startup"]:
-        display.start()
     sys.exit(app.exec_())
