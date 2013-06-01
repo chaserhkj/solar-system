@@ -36,9 +36,8 @@ def _getv(dic, key, res, mod=None, assign=False):
             dic[key] = res()
         
 def _color_r(color):
-    a=[color.red()/255.0,color.green()/255.0,color.blue()/255.0]
-    print a
-    return a
+    return [color.red()/255.0,color.green()/255.0,color.blue()/255.0]
+
 def _style_r(value):
     if value == 1:
         return "solid"
