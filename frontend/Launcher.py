@@ -14,7 +14,11 @@ if __name__ == '__main__':
     filename = g.QFileDialog.getOpenFileName()
     if not filename:
         sys.exit(1)
-    io.load(filename)
+    try:
+        io.load(filename)
+    except Exception as e:
+        g.QMessageBox.critical(None, "I/O error","Load exception %s: %s"%(e.__class__.__name__, e))
+        sys.exit(1)
     obj = galaxy.galaxy(
         n = io.N,
         stars = io.celas,

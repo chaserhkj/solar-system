@@ -73,14 +73,21 @@ class Editor(g.QWidget):
     def openFile(self):
         filename = g.QFileDialog.getOpenFileName(self)
         if filename:
-            self._io.load(filename)
+            try:
+                self._io.load(filename)
+            except Exception as e:
+                g.QMessageBox.critical(self, "I/O error","Load exception %s: %s"%(e.__class__.__name__, e))
             self.dataUpdated.emit()
         
     def saveFile(self):
         self.saveDisplayedData()
         filename = g.QFileDialog.getSaveFileName(self)
         if filename:
-            self._io.save(filename)
+            try:
+                self._io.save(filename)
+            except Exception as e:
+                g.QMessageBox.critical(self, "I/O error","Save exception %s: %s"%(e.__class__.__name__, e))
+
 
 
     def saveDisplayedData(self):
