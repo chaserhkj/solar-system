@@ -199,17 +199,15 @@ void galaxy::setcollision()
             r = celas[j].p - celas[i].p;
             d = r.mag();
             epi = r / d;
-            if ((d < (celas[i].r + celas[j].r)) && !celas[j].c) { //Collision with uncollided one
+            if ((d < (celas[i].r + celas[j].r)) && !celas[j].c && (r * (celas[j].v - celas[i].v) < 0)) { //Collision with uncollided one
                 celas[i].c = true;
                 celas[j].c = true;
-                if (r * (celas[j].v - celas[i].v) < 0) {
 #pragma omp task firstprivate(i,j,epi) private(dvi,dvj)
-                    {
-                        dvj = 2 * celas[i].m / (celas[j].m + celas[i].m) * (celas[i].v - celas[j].v) * epi * epi;
-                        dvi = 2 * celas[j].m / (celas[j].m + celas[i].m) * (celas[j].v - celas[i].v) * epi * epi;
-                        celas[i].v += dvi;
-                        celas[j].v += dvj;
-                    }
+                {
+                    dvj = 2 * celas[i].m / (celas[j].m + celas[i].m) * (celas[i].v - celas[j].v) * epi * epi;
+                    dvi = 2 * celas[j].m / (celas[j].m + celas[i].m) * (celas[j].v - celas[i].v) * epi * epi;
+                    celas[i].v += dvi;
+                    celas[j].v += dvj;
                 }
                 break;
             }
