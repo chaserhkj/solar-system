@@ -1,3 +1,6 @@
+//Copyright (C) 2013 Kangjing Huang & Zhiyi Xu
+//For further infomation, see LICENSE.txt
+
 #include <cmath>
 #include <omp.h>
 #include "galaxy.h"

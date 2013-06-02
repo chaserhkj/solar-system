@@ -1,3 +1,6 @@
+//Copyright (C) 2013 Kangjing Huang & Zhiyi Xu
+//For further infomation, see LICENSE.txt
+
 #ifndef GALAXY_H
 #define GALAXY_H
 

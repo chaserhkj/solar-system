@@ -1,4 +1,6 @@
 #!/usr/bin/env python2
+# Copyright (C) 2013 Kangjing Huang & Zhiyi Xu
+# For further infomation, see LICENSE.txt
 import PyQt4.QtOpenGL as qgl
 import PyQt4.QtCore as c
 import PyQt4.QtGui as g

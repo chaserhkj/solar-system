@@ -1,4 +1,6 @@
 #!/usr/bin/env python2
+# Copyright (C) 2013 Kangjing Huang & Zhiyi Xu
+# For further infomation, see LICENSE.txt
 import json
 try:
     import galaxy

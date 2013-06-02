@@ -1,3 +1,5 @@
+# Copyright (C) 2013 Kangjing Huang & Zhiyi Xu
+# For further infomation, see LICENSE.txt
 CXX := g++ -c
 CFLAGS := $(CFLAGS) -fpic -fopenmp -Wall -Wextra
 CXXFLAGS := $(CFLAGS)
