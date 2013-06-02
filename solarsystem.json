@@ -1,0 +1,276 @@
+{
+  "global": {
+    "Trace buffer size": 1000, 
+    "Plane cell density": 20, 
+    "Gravity constant": 1.0, 
+    "Enable smooth": 2, 
+    "Line width": 1.0, 
+    "Plane scale": 36000.0, 
+    "Recursion depth": 69, 
+    "Calculation step": 0.01, 
+    "Enable multi-sampling": true, 
+    "Frame interval": 20, 
+    "Step per frame": 10, 
+    "Line drawing interval": 1, 
+    "Thread count": 1, 
+    "Plane color": [
+      0.6, 
+      0.8, 
+      1.0
+    ], 
+    "Drawing scale": 20000.0, 
+    "Show shadow line": true, 
+    "Axis color": [
+      1.0, 
+      1.0, 
+      1.0
+    ], 
+    "Enable lighting": true, 
+    "Start system at startup": false, 
+    "Axis length": 20, 
+    "Initial time": 0.0, 
+    "Default sphere style": "wired", 
+    "Fix applied": false, 
+    "Recursive coefficient": 0.01
+  }, 
+  "celas": [
+    {
+      "graphic": {
+        "color": [
+          1, 
+          0, 
+          0
+        ], 
+        "radius": 40
+      }, 
+      "name": "Sun", 
+      "radius": 20, 
+      "position": [
+        0, 
+        0, 
+        0
+      ], 
+      "velocity": [
+        0, 
+        0, 
+        0
+      ], 
+      "mass": 1000000
+    }, 
+    {
+      "graphic": {
+        "color": [
+          1.0, 
+          1.0, 
+          1.0
+        ], 
+        "style": "wired", 
+        "radius": 3.8
+      }, 
+      "name": "Mercury", 
+      "radius": 0.38, 
+      "position": [
+        390.0, 
+        0.0, 
+        0.0
+      ], 
+      "velocity": [
+        0.0, 
+        50.6359556047, 
+        0.0
+      ], 
+      "mass": 0.0553
+    }, 
+    {
+      "graphic": {
+        "color": [
+          1.0, 
+          1.0, 
+          0.0
+        ], 
+        "style": "wired", 
+        "radius": 9.49
+      }, 
+      "name": "Venus", 
+      "radius": 0.949, 
+      "position": [
+        720.0, 
+        0.0, 
+        0.0
+      ], 
+      "velocity": [
+        0.0, 
+        37.2558720204, 
+        0.0
+      ], 
+      "mass": 0.815
+    }, 
+    {
+      "graphic": {
+        "color": [
+          0.5, 
+          0.7, 
+          1
+        ], 
+        "radius": 1
+      }, 
+      "name": "Earth", 
+      "radius": 1, 
+      "position": [
+        1000, 
+        0, 
+        0
+      ], 
+      "velocity": [
+        0, 
+        31.622776601683793, 
+        0
+      ], 
+      "mass": 1
+    }, 
+    {
+      "graphic": {
+        "color": [
+          1.0, 
+          0.0, 
+          0.0
+        ], 
+        "style": "wired", 
+        "radius": 0.3
+      }, 
+      "name": "Moon", 
+      "radius": 0.01, 
+      "position": [
+        1002.5, 
+        0.0, 
+        0.0
+      ], 
+      "velocity": [
+        0.0, 
+        32.2552321337, 
+        0.0
+      ], 
+      "mass": 1e-06
+    }, 
+    {
+      "graphic": {
+        "color": [
+          0.9294117647058824, 
+          0.4, 
+          0.14901960784313725
+        ], 
+        "style": "wired", 
+        "radius": 5.32
+      }, 
+      "name": "Mars", 
+      "radius": 0.532, 
+      "position": [
+        1520.0, 
+        0.0, 
+        0.0
+      ], 
+      "velocity": [
+        0.0, 
+        25.632011236, 
+        0.0
+      ], 
+      "mass": 0.1074
+    }, 
+    {
+      "graphic": {
+        "color": [
+          0.8, 
+          0.5058823529411764, 
+          0.4117647058823529
+        ], 
+        "style": "wired", 
+        "radius": 112.0
+      }, 
+      "name": "Jupiter", 
+      "radius": 11.2, 
+      "position": [
+        5200.0, 
+        0.0, 
+        0.0
+      ], 
+      "velocity": [
+        0.0, 
+        13.8564064606, 
+        0.0
+      ], 
+      "mass": 317.834
+    }, 
+    {
+      "graphic": {
+        "color": [
+          0.8, 
+          0.7294117647058823, 
+          0.4823529411764706
+        ], 
+        "style": "wired", 
+        "radius": 94.1
+      }, 
+      "name": "Saturn", 
+      "radius": 9.41, 
+      "position": [
+        9540.0, 
+        0.0, 
+        0.0
+      ], 
+      "velocity": [
+        0.0, 
+        10.1980390272, 
+        0.0
+      ], 
+      "mass": 95.159
+    }, 
+    {
+      "graphic": {
+        "color": [
+          0.6, 
+          0.7529411764705882, 
+          0.8117647058823529
+        ], 
+        "style": "wired", 
+        "radius": 40.6
+      }, 
+      "name": "Uranus", 
+      "radius": 4.06, 
+      "position": [
+        19200.0, 
+        0.0, 
+        0.0
+      ], 
+      "velocity": [
+        0.0, 
+        7.21110255093, 
+        0.0
+      ], 
+      "mass": 14.5
+    }, 
+    {
+      "graphic": {
+        "color": [
+          0.6823529411764706, 
+          0.32941176470588235, 
+          0.4745098039215686
+        ], 
+        "style": "wired", 
+        "radius": 38.8
+      }, 
+      "name": "Neptune", 
+      "radius": 3.88, 
+      "position": [
+        30100.0, 
+        0.0, 
+        0.0
+      ], 
+      "velocity": [
+        0.0, 
+        5.74456264654, 
+        0.0
+      ], 
+      "mass": 17.2
+    }
+  ]
+}
