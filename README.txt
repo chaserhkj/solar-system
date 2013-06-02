@@ -30,6 +30,8 @@ Ctrl + -=:change the distance between viewpoint and axes center
 /:set view to default
 O:fix system energy to startup
 P:toggle energe fix
+,.:decrease/increase speed
+;:set speed to default
 Esc:quit fullscreen/quit program
 
 
