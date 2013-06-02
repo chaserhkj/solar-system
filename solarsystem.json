@@ -65,7 +65,7 @@
           1.0
         ], 
         "style": "wired", 
-        "radius": 3.8
+        "radius": 0.38
       }, 
       "name": "Mercury", 
       "radius": 0.38, 
@@ -89,7 +89,7 @@
           0.0
         ], 
         "style": "wired", 
-        "radius": 9.49
+        "radius": 0.949
       }, 
       "name": "Venus", 
       "radius": 0.949, 
@@ -132,8 +132,8 @@
       "graphic": {
         "color": [
           1.0, 
-          0.0, 
-          0.0
+          1.0, 
+          1.0
         ], 
         "style": "wired", 
         "radius": 0.3
@@ -160,7 +160,7 @@
           0.14901960784313725
         ], 
         "style": "wired", 
-        "radius": 5.32
+        "radius": 0.532
       }, 
       "name": "Mars", 
       "radius": 0.532, 
@@ -184,7 +184,7 @@
           0.4117647058823529
         ], 
         "style": "wired", 
-        "radius": 112.0
+        "radius": 11.2
       }, 
       "name": "Jupiter", 
       "radius": 11.2, 
@@ -208,7 +208,7 @@
           0.4823529411764706
         ], 
         "style": "wired", 
-        "radius": 94.1
+        "radius": 9.41
       }, 
       "name": "Saturn", 
       "radius": 9.41, 
@@ -232,7 +232,7 @@
           0.8117647058823529
         ], 
         "style": "wired", 
-        "radius": 40.6
+        "radius": 4.06
       }, 
       "name": "Uranus", 
       "radius": 4.06, 
@@ -256,7 +256,7 @@
           0.4745098039215686
         ], 
         "style": "wired", 
-        "radius": 38.8
+        "radius": 3.88
       }, 
       "name": "Neptune", 
       "radius": 3.88, 
