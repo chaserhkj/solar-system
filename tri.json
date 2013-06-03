@@ -1,0 +1,134 @@
+{
+  "global": {
+    "Trace buffer size": 1000, 
+    "Plane cell density": 20, 
+    "Gravity constant": 5.0, 
+    "Enable smooth": 2, 
+    "Line width": 1.0, 
+    "Plane scale": 36000.0, 
+    "Recursion depth": 69, 
+    "Calculation step": 0.01, 
+    "Enable multi-sampling": true, 
+    "Frame interval": 20, 
+    "Step per frame": 10, 
+    "Line drawing interval": 1, 
+    "Thread count": 1, 
+    "Plane color": [
+      0.6, 
+      0.8, 
+      1.0
+    ], 
+    "Drawing scale": 10000.0, 
+    "Show shadow line": true, 
+    "Axis color": [
+      1.0, 
+      1.0, 
+      1.0
+    ], 
+    "Enable lighting": true, 
+    "Start system at startup": false, 
+    "Axis length": 20, 
+    "Initial time": 0.0, 
+    "Default sphere style": "wired", 
+    "Fix applied": false, 
+    "Recursive coefficient": 0.01
+  }, 
+  "celas": [
+    {
+      "graphic": {
+        "color": [
+          1.0, 
+          0.0, 
+          0.0
+        ], 
+        "style": "wired", 
+        "radius": 40.0
+      }, 
+      "name": "Sun1", 
+      "radius": 20.0, 
+      "position": [
+        0.0, 
+        0.0, 
+        0.0
+      ], 
+      "velocity": [
+        0.0, 
+        -100.0, 
+        -101.0
+      ], 
+      "mass": 1000000.0
+    }, 
+    {
+      "graphic": {
+        "color": [
+          0.0, 
+          1.0, 
+          0.0
+        ], 
+        "style": "wired", 
+        "radius": 40.0
+      }, 
+      "name": "Sun2", 
+      "radius": 20.0, 
+      "position": [
+        500.0, 
+        0.0, 
+        0.0
+      ], 
+      "velocity": [
+        0.0, 
+        100.0, 
+        0.0
+      ], 
+      "mass": 1000000.0
+    }, 
+    {
+      "graphic": {
+        "color": [
+          0.0, 
+          0.0, 
+          1.0
+        ], 
+        "style": "wired", 
+        "radius": 40.0
+      }, 
+      "name": "Sun3", 
+      "radius": 20.0, 
+      "position": [
+        0.0, 
+        500.0, 
+        0.0
+      ], 
+      "velocity": [
+        0.0, 
+        0.0, 
+        101.0
+      ], 
+      "mass": 1000000.0
+    }, 
+    {
+      "graphic": {
+        "color": [
+          1.0, 
+          1.0, 
+          1.0
+        ], 
+        "style": "wired", 
+        "radius": 10.0
+      }, 
+      "name": "Earth", 
+      "radius": 1.0, 
+      "position": [
+        500.0, 
+        500.0, 
+        0.0
+      ], 
+      "velocity": [
+        10.0, 
+        10.0, 
+        10.0
+      ], 
+      "mass": 1.0
+    }
+  ]
+}
