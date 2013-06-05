@@ -1,3 +1,4 @@
+This program is licensed under the MIT license.
 See LICENSE.txt for more about license.
 
 To build this program, you need:
