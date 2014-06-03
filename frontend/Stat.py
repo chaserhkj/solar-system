@@ -1,4 +1,4 @@
-#/usr/bin/env python2
+#!/usr/bin/env python2
 # Copyright (C) 2013-2014 Kangjing Huang & Zhiyi Xu
 # For further infomation, see LICENSE.txt
 
